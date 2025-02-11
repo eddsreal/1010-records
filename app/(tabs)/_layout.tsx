@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { Pressable, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../../global.css";
 
@@ -52,8 +53,22 @@ export default function TabLayout() {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="categories-wizzard"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
       <StatusBar style="dark" />
+      <View>
+        <Pressable
+          className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
+          onPress={() => router.push("/categories-wizzard")}
+        >
+          <Text className="text-white text-4xl font-bold">+</Text>
+        </Pressable>
+      </View>
     </SafeAreaProvider>
   );
 }
