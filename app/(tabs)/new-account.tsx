@@ -1,4 +1,5 @@
 import { inputStyles } from "@/common/styles/input.styles";
+import { CurrencyInputAtom } from "@/components/atoms/currency-input.atom";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
@@ -8,7 +9,7 @@ import { TextField } from "react-native-ui-lib";
 interface FormValues {
   name: string;
   description: string;
-  balance: number;
+  balance: string;
 }
 
 export default function NewAccount() {
@@ -17,7 +18,7 @@ export default function NewAccount() {
     defaultValues: {
       name: "",
       description: "",
-      balance: 0,
+      balance: "0",
     },
   });
 
@@ -28,7 +29,7 @@ export default function NewAccount() {
       id: accountId,
       name: data.name,
       description: data.description,
-      balance: data.balance,
+      balance: parseFloat(data.balance),
     };
 
     useAccountsStore.setState({
@@ -56,7 +57,6 @@ export default function NewAccount() {
             onBlur={field.onBlur}
             value={field.value}
             placeholder={"Nombre de cuenta"}
-            floatingPlaceholder
             placeholderClassName="text-gray-500"
             fieldStyle={inputStyles.fieldStyle}
             containerStyle={inputStyles.containerStyle}
@@ -73,7 +73,6 @@ export default function NewAccount() {
             onBlur={field.onBlur}
             value={field.value}
             placeholder={"Descripción"}
-            floatingPlaceholder
             placeholderClassName="text-gray-500"
             fieldStyle={inputStyles.fieldStyle}
             containerStyle={inputStyles.containerStyle}
@@ -85,14 +84,11 @@ export default function NewAccount() {
         control={control}
         name="balance"
         render={({ field }) => (
-          <TextField
+          <CurrencyInputAtom
             onChangeText={field.onChange}
             onBlur={field.onBlur}
-            value={field.value.toString()}
             placeholder={"Balance"}
-            floatingPlaceholder
             placeholderClassName="text-gray-500"
-            fieldStyle={inputStyles.fieldStyle}
             containerStyle={inputStyles.containerStyle}
           />
         )}
