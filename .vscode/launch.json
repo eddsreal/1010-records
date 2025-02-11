@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "Attach application",
+      "request": "attach",
+      "type": "reactnativedirect",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
