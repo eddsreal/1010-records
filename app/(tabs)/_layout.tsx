@@ -15,7 +15,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Dashboard",
+            title: "Inicio",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home-sharp" color={color} size={size} />
             ),
@@ -24,7 +24,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="accounts"
           options={{
-            title: "Accounts",
+            title: "Cuentas",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="card-sharp" color={color} size={size} />
             ),
@@ -33,7 +33,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="forecast"
           options={{
-            title: "Forecast",
+            title: "Proyección",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="bar-chart-sharp" color={color} size={size} />
             ),
@@ -41,6 +41,12 @@ export default function TabLayout() {
         />
         <Tabs.Screen
           name="new-transaction"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="new-account"
           options={{
             href: null,
           }}
