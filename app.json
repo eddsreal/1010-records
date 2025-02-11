@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "1010-records-app",
-    "slug": "1010-records-app",
+    "name": "1010 Records",
+    "slug": "1010-records",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "1010-records-app",
+    "scheme": "1010-records",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",

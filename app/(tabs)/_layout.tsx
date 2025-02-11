@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import "../../global.css";
 
 export default function TabLayout() {
   return (

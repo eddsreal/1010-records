@@ -12,7 +12,7 @@ export default function DashboardView() {
         paddingBottom: insets.bottom,
       }}
     >
-      <Text>Index</Text>
+      <Text className="text-2xl font-bold">Index</Text>
     </View>
   );
 }
