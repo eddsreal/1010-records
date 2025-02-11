@@ -45,7 +45,7 @@ export function CurrencyInputAtom({
         </View>
       );
     },
-    [prefix],
+    [prefix, props.placeholder],
   );
 
   const formatter = useCallback((value: string) => {
