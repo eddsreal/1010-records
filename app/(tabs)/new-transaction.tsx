@@ -17,8 +17,8 @@ interface FormValues {
   currency: string;
   type: TransactionTypeEnum;
   account: number;
-  priority: string;
-  category: string;
+  priority: number;
+  category: number;
 }
 
 export default function NewTransactionView() {
@@ -31,15 +31,20 @@ export default function NewTransactionView() {
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<FormValues>({
     mode: "all",
     defaultValues: {
       type: TransactionTypeEnum.EXPENSE,
+      account: undefined,
+      priority: undefined,
+      category: undefined,
     },
   });
 
   const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE;
   const type = watch("type");
+  const isIncome = type === TransactionTypeEnum.INCOME;
 
   const renderHeader = () => {
     const currentMonth = new Date().toLocaleString("es-ES", {
@@ -141,7 +146,6 @@ export default function NewTransactionView() {
   };
 
   const renderMovementType = () => {
-    const isIncome = type === TransactionTypeEnum.INCOME;
     return (
       <View>
         <Text className="text-primary text-lg font-bold">
@@ -349,13 +353,58 @@ export default function NewTransactionView() {
     );
   };
 
+  const renderForecastComparison = () => {
+    const amount = watch("amount");
+    const proyected = 100000;
+    const isMoreThanProyected = amount > proyected;
+    const isZero = amount - proyected === 0;
+
+    return (
+      <View>
+        <Text className="text-primary text-lg font-bold">
+          Comparación de gastos
+        </Text>
+        <View className="flex-row gap-4 items-center justify-center p-4">
+          <View>
+            <Text className="text-app-gray text-lg font-bold">Proyectado</Text>
+            <Text className="text-app-gray text-lg font-bold">{proyected}</Text>
+          </View>
+          <View>
+            <Text className="text-app-gray text-lg font-bold">
+              Ejecutado + Esta Transacción
+            </Text>
+            <Text className="text-app-gray text-lg font-bold">{amount}</Text>
+          </View>
+        </View>
+        <View className="flex-row gap-4 items-center justify-center p-4">
+          <Text className="text-app-gray text-lg font-bold">
+            {isMoreThanProyected && !isZero
+              ? `Estás ${(proyected - amount) * -1} por encima de lo proyectado`
+              : ""}
+            {!isMoreThanProyected && !isZero
+              ? `Aún tienes ${proyected - amount} presupuestado para este mes`
+              : ""}
+            {isZero ? "Muy bien! estás sin fugas de dinero" : ""}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
   const renderActions = () => {
     return (
       <View className="flex-row gap-4 items-center justify-center p-4">
         <Pressable className="py-2 px-4 rounded-md bg-primary">
           <Text className="text-white text-lg font-bold">Guardar</Text>
         </Pressable>
-        <Pressable className="py-2 px-4 rounded-md bg-secondary">
+        <Pressable
+          className="py-2 px-4 rounded-md bg-secondary"
+          onPress={() => {
+            reset();
+            router.back();
+            newTransaction.reset?.();
+          }}
+        >
           <Text className="text-white text-lg font-bold">Cancelar</Text>
         </Pressable>
       </View>
@@ -374,7 +423,8 @@ export default function NewTransactionView() {
         {renderMovementType()}
         {renderMovementAmount()}
         {isCompleteMode && renderAccounts()}
-        {isCompleteMode && renderPriority()}
+        {isCompleteMode && !isIncome && renderPriority()}
+        {isCompleteMode && !isIncome && renderForecastComparison()}
         {renderActions()}
       </View>
     </ScrollView>
