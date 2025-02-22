@@ -1,3 +1,4 @@
+import { colors } from "@/common/styles/colors.styles";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -12,6 +13,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarActiveTintColor: colors.primary,
         }}
       >
         <Tabs.Screen
@@ -64,7 +66,7 @@ export default function TabLayout() {
       <View>
         <Pressable
           className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
-          onPress={() => router.push("/categories-wizzard")}
+          onPress={() => router.push("/new-transaction")}
         >
           <Text className="text-white text-4xl font-bold">+</Text>
         </Pressable>

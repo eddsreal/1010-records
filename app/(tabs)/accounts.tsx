@@ -12,7 +12,7 @@ export default function AccountsView() {
       <FlatList
         data={accounts}
         renderItem={({ item }) => (
-          <View className="bg-gray-100 rounded-lg p-4">
+          <View className="bg-gray-100 rounded-lg p-4 mb-4">
             <Text className="text-primary text-xl font-bold">{item.name}</Text>
             <Text className="text-gray-500 text-sm">{item.description}</Text>
             <Text className="text-gray-500 text-sm">{item.balance}</Text>

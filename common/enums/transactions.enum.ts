@@ -1,9 +1,9 @@
-export enum MovementTypeEnum {
+export enum TransactionTypeEnum {
   INCOME = "INCOME",
   EXPENSE = "EXPENSE",
 }
 
-export enum MovementFormTypeEnum {
+export enum TransactionFormTypeEnum {
   FAST = "Fast",
   COMPLETE = "Complete",
 }
