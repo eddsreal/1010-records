@@ -6,7 +6,7 @@ type TransactionsStoreType = {
   mode: TransactionFormTypeEnum;
   newTransaction: {
     selectedPriority: Priority | null;
-    reset?: () => void;
+    reset: () => void;
   };
 };
 
@@ -17,6 +17,7 @@ export const useTransactionsStore = create<TransactionsStoreType>()(
       selectedPriority: null,
       reset: () => {
         set({
+          mode: TransactionFormTypeEnum.FAST,
           newTransaction: {
             ...get().newTransaction,
             selectedPriority: null,

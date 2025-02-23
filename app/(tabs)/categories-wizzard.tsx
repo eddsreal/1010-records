@@ -1,20 +1,28 @@
-import { Category, Priority } from "@/common/interfaces/priorities.interfaces";
-import { colors } from "@/common/styles/colors.styles";
 import { inputStyles } from "@/common/styles/input.styles";
-import { usePrioritiesStore } from "@/stores/priorities.store";
-import { Ionicons } from "@expo/vector-icons";
+import * as schema from "@/database/schema";
+import { Category } from "@/database/schema";
+import {
+  PriorityWithCategories,
+  usePrioritiesStore,
+} from "@/stores/priorities.store";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { TextField } from "react-native-ui-lib";
 
+const expoDb = openDatabaseSync("1010records");
+const db = drizzle(expoDb);
+
 export const CategoryElement: React.FunctionComponent<{
   category: Category;
-  priority: Priority;
+  priority: PriorityWithCategories;
   isSuggested?: boolean;
 }> = ({ category, priority, isSuggested = false }) => {
   const isSaved = priority.categories.some(
-    (innerCategory) => innerCategory.id === category.id,
+    (innerCategory: Category) => innerCategory.id === category.id,
   );
   return (
     <View
@@ -33,14 +41,22 @@ export const CategoryElement: React.FunctionComponent<{
         </Text>
       </View>
       <View className="flex-row gap-4">
-        {!isSaved && (
+        {/* {!isSaved && (
           <Ionicons
             name="save"
             size={25}
             color="gray"
             onPress={() =>
               usePrioritiesStore.setState({
-                categories: [...priority.categories, category],
+                priorities: priorities.map((innerPriority) => {
+                  if (innerPriority.id === priority.id) {
+                    return {
+                      ...innerPriority,
+                      categories: [...innerPriority.categories, category],
+                    };
+                  }
+                  return innerPriority;
+                }),
               })
             }
           />
@@ -55,50 +71,50 @@ export const CategoryElement: React.FunctionComponent<{
               onPress={() => {
                 usePrioritiesStore.setState({
                   categories: priority.categories.filter(
-                    (innerCategory) => innerCategory.id !== category.id,
+                    (innerCategory: Category) =>
+                      innerCategory.id !== category.id
                   ),
                 });
               }}
             />
           </View>
-        )}
+        )} */}
       </View>
     </View>
   );
 };
 
 export const PriorityElement: React.FunctionComponent<{
-  priority: Priority;
+  priority: PriorityWithCategories;
 }> = ({ priority }) => {
-  const { categoryId, priorities } = usePrioritiesStore();
+  const { priorities } = usePrioritiesStore();
   const { control, getValues, handleSubmit, reset } = useForm();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const value = getValues("category");
 
-    const categories = [
-      ...priority.categories,
-      {
-        id: categoryId,
-        name: value,
-        description: value,
-        icon: "icon",
-        color: "red",
-        priorityId: priority.id,
-      },
-    ];
-
-    const innerPriorities = priorities.map((innerPriority) => {
-      if (innerPriority.id === priority.id) {
-        return { ...innerPriority, categories };
-      }
-      return innerPriority;
+    await db.insert(schema.categories).values({
+      name: value,
+      description: value,
+      icon: "💰",
+      color: "#000000",
+      priorityId: priority.id,
     });
 
-    usePrioritiesStore.setState({
-      priorities: innerPriorities,
-      categoryId: categoryId + 1,
-    });
+    const resultPriorities = await db.select().from(schema.priorities);
+
+    const prioritiesWithCategories = await Promise.all(
+      resultPriorities.map(async (priority) => ({
+        ...priority,
+        categories: await db
+          .select()
+          .from(schema.categories)
+          .where(eq(schema.categories.priorityId, priority.id)),
+      })),
+    );
+
+    usePrioritiesStore.setState({ priorities: prioritiesWithCategories });
+
     reset();
   };
 
@@ -109,23 +125,9 @@ export const PriorityElement: React.FunctionComponent<{
 
       <View className="mt-4">
         <Text className="text-xl leading-none font-bold text-primary">
-          Categorias sugeridas
-        </Text>
-        {priority.suggestedCategories?.map((category) => (
-          <CategoryElement
-            category={category}
-            key={category.id}
-            priority={priority}
-            isSuggested={true}
-          />
-        ))}
-      </View>
-
-      <View className="mt-4">
-        <Text className="text-xl leading-none font-bold text-primary">
           Categorias Creadas
         </Text>
-        {priority.categories?.map((category) => (
+        {priority.categories?.map((category: Category) => (
           <CategoryElement
             category={category}
             key={category.id}

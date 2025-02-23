@@ -4,6 +4,7 @@ import {
 } from "@/common/enums/transactions.enum";
 import { inputStyles } from "@/common/styles/input.styles";
 import { CurrencyInputAtom } from "@/components/atoms/currency-input.atom";
+import { Category } from "@/database/schema";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { usePrioritiesStore } from "@/stores/priorities.store";
 import { useTransactionsStore } from "@/stores/transactions.store";
@@ -269,20 +270,20 @@ export default function NewTransactionView() {
                   <Text
                     className={`${isSelected ? "text-white" : "text-gray-400"} font-bold`}
                   >
-                    {priority.id} - {priority.name}
+                    {priority.id} - {priority.icon} - {priority.name}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
           {selectedPriority && (
-            <View className="flex-col gap-4 items-start justify-start w-1/2">
+            <View className="flex-col gap-4 items-center justify-start w-1/2 h-full">
               <View>
                 <Text className="text-primary text-lg font-bold">
                   Prioridad seleccionada
                 </Text>
                 <Text className="text-app-gray text-lg font-bold">
-                  {selectedPriority?.name}
+                  {selectedPriority?.icon} - {selectedPriority?.name}
                 </Text>
               </View>
               {!selectedPriority.categories.length ? (
@@ -312,7 +313,7 @@ export default function NewTransactionView() {
                       searchPlaceholder={"Buscar categoría"}
                       renderInput={(value: number | undefined) => {
                         const category = selectedPriority.categories.find(
-                          (category) => category.id === value,
+                          (category: Category) => category.id === value,
                         );
                         return (
                           <View className="flex-row items-center gap-2 border border-gray-200 rounded-xl px-8 py-2">
@@ -323,7 +324,7 @@ export default function NewTransactionView() {
                             ) : (
                               <Text className="text-app-gray text-lg font-bold">
                                 {value
-                                  ? `${category?.name}`
+                                  ? `${category?.icon} - ${category?.name}`
                                   : "Selecciona una categoría"}
                               </Text>
                             )}
@@ -335,10 +336,10 @@ export default function NewTransactionView() {
                         placeholderTextColor: "gray",
                       }}
                     >
-                      {selectedPriority.categories.map((category) => (
+                      {selectedPriority.categories.map((category: Category) => (
                         <Picker.Item
                           key={category.id}
-                          label={category.name}
+                          label={`${category.icon} - ${category.name}`}
                           value={category.id}
                         />
                       ))}

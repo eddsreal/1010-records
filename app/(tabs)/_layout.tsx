@@ -1,13 +1,61 @@
 import { colors } from "@/common/styles/colors.styles";
+import * as schema from "@/database/schema";
+import migrations from "@/drizzle/migrations";
+import { useAccountsStore } from "@/stores/accounts.store";
+import { usePrioritiesStore } from "@/stores/priorities.store";
 import { Ionicons } from "@expo/vector-icons";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { router, Tabs } from "expo-router";
+import { openDatabaseSync } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../../global.css";
+const expoDb = openDatabaseSync("1010records");
+const db = drizzle(expoDb);
 
 export default function TabLayout() {
+  const { success, error } = useMigrations(db, migrations);
+
+  const getInitialData = async () => {
+    const accounts = await db.select().from(schema.accounts);
+    const resultPriorities = await db.select().from(schema.priorities);
+
+    const prioritiesWithCategories = await Promise.all(
+      resultPriorities.map(async (priority) => ({
+        ...priority,
+        categories: await db
+          .select()
+          .from(schema.categories)
+          .where(eq(schema.categories.priorityId, priority.id)),
+      })),
+    );
+    useAccountsStore.setState({ accounts });
+    usePrioritiesStore.setState({ priorities: prioritiesWithCategories });
+  };
+
+  useEffect(() => {
+    getInitialData();
+  }, [success]);
+
+  if (error) {
+    return (
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
+    );
+  }
+  if (!success) {
+    return (
+      <View>
+        <Text>Migration is in progress...</Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <Tabs
