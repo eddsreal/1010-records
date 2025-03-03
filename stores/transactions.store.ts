@@ -1,11 +1,11 @@
 import { TransactionFormTypeEnum } from "@/common/enums/transactions.enum";
-import { Priority } from "@/common/interfaces/priorities.interfaces";
 import { create } from "zustand";
+import { PriorityWithCategories } from "./priorities.store";
 
 type TransactionsStoreType = {
   mode: TransactionFormTypeEnum;
   newTransaction: {
-    selectedPriority: Priority | null;
+    selectedPriority: PriorityWithCategories | null;
     reset: () => void;
   };
 };

@@ -60,7 +60,7 @@ export function useForecastDetail() {
           await db
             .insert(schema.forecastDetail)
             .values({
-              month: parseInt(key),
+              month: parseInt(key) + 1,
               amount: data[key],
               priorityId: forecastDetailModal?.priority?.id,
               categoryId: forecastDetailModal?.category?.id,

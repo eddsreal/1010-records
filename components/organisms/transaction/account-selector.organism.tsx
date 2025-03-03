@@ -1,3 +1,4 @@
+import { useCurrency } from "@/common/hooks/use-currency.hook";
 import { TransactionFormValues } from "@/common/hooks/use-transaction-form";
 import { useAccountsStore } from "@/stores/accounts.store";
 import React from "react";
@@ -11,6 +12,7 @@ type Props = {
 
 export const AccountSelector: React.FC<Props> = ({ control }) => {
   const { accounts } = useAccountsStore();
+  const { formatToCurrency } = useCurrency();
 
   return (
     <View className="flex-col mb-4">
@@ -39,7 +41,9 @@ export const AccountSelector: React.FC<Props> = ({ control }) => {
                     ) : (
                       <Text className="text-app-gray text-lg font-bold">
                         {value
-                          ? `${account?.name} - ${account?.balance}`
+                          ? `${account?.name} - ${formatToCurrency(
+                              account?.balance || 0,
+                            )}`
                           : "Selecciona una cuenta"}
                       </Text>
                     )}

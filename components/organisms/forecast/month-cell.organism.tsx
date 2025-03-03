@@ -1,3 +1,4 @@
+import { useCurrency } from "@/common/hooks/use-currency.hook";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export const MonthCell: React.FC<Props> = ({ monthName, amount, onPress }) => {
+  const { formatToCurrency } = useCurrency();
+
   return (
     <View className="py-2 px-4 border-r border-gray-200 items-center">
       <Text className="text-sm font-bold text-primary capitalize">
@@ -17,11 +20,7 @@ export const MonthCell: React.FC<Props> = ({ monthName, amount, onPress }) => {
         className="text-lg mt-1 text-gray-500 w-32 overflow-clip text-center"
         onPress={onPress}
       >
-        $
-        {amount.toLocaleString("es-CO", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}
+        {formatToCurrency(amount)}
       </Text>
     </View>
   );

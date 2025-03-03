@@ -41,7 +41,7 @@ export default function EditForecastElement() {
 
   useEffect(() => {
     forecastDetail.forEach((d) => {
-      setValue(d.month.toString(), d.amount);
+      setValue((d.month - 1).toString(), d.amount);
     });
   }, [forecastDetail, setValue]);
 

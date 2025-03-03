@@ -42,7 +42,7 @@ export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
           {Array.from({ length: 12 }).map((_, monthIndex) => {
             const monthData = forecastDetail.find(
               (fd) =>
-                fd.month === monthIndex + 1 &&
+                fd.month === monthIndex &&
                 fd.accountId === account.id &&
                 fd.priorityId === null,
             );

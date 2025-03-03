@@ -1,9 +1,11 @@
+import { useCurrency } from "@/common/hooks/use-currency.hook";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { router } from "expo-router";
 import { FlatList, Pressable, Text, View } from "react-native";
 
 export default function AccountsView() {
   const { accounts } = useAccountsStore();
+  const { formatToCurrency } = useCurrency();
 
   return (
     <View className="bg-white h-full p-4">
@@ -15,7 +17,9 @@ export default function AccountsView() {
           <View className="bg-gray-100 rounded-lg p-4 mb-4">
             <Text className="text-primary text-xl font-bold">{item.name}</Text>
             <Text className="text-gray-500 text-sm">{item.description}</Text>
-            <Text className="text-gray-500 text-sm">{item.balance}</Text>
+            <Text className="text-gray-500 text-sm">
+              {formatToCurrency(item.balance)}
+            </Text>
           </View>
         )}
       />
