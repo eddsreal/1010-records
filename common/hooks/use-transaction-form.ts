@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ForecastType } from "../enums/forecast.enum";
 
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
@@ -60,7 +61,8 @@ export function useTransactionForm() {
             newTransaction.selectedPriority.id
           ),
           eq(schema.forecastDetail.categoryId, category),
-          eq(schema.forecastDetail.month, month)
+          eq(schema.forecastDetail.month, month),
+          eq(schema.forecastDetail.forecastType, ForecastType.PROJECTED)
         )
       );
 

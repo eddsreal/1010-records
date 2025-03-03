@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { router, Tabs } from "expo-router";
+import { router, Tabs, usePathname } from "expo-router";
 import { openDatabaseSync } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
@@ -19,6 +19,9 @@ const db = drizzle(expoDb);
 
 export default function TabLayout() {
   const { success, error } = useMigrations(db, migrations);
+  const pathname = usePathname();
+  const shouldHideElement =
+    pathname.includes("edit") || pathname.includes("new");
 
   const getInitialData = async () => {
     const accounts = await db.select().from(schema.accounts);
@@ -59,13 +62,17 @@ export default function TabLayout() {
   return (
     <SafeAreaProvider>
       <Tabs
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: colors.primary,
-          tabBarStyle: {
-            display: route.name === "edit-forecast-element" ? "none" : "flex",
-          },
-        })}
+        screenOptions={({ route }) => {
+          const hideTabBar =
+            route.name.includes("edit") || route.name.includes("new");
+          return {
+            headerShown: false,
+            tabBarActiveTintColor: colors.primary,
+            tabBarStyle: {
+              display: hideTabBar ? "none" : "flex",
+            },
+          };
+        }}
       >
         <Tabs.Screen
           name="index"
@@ -120,14 +127,16 @@ export default function TabLayout() {
         />
       </Tabs>
       <StatusBar style="dark" />
-      <View>
-        <Pressable
-          className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
-          onPress={() => router.push("/new-transaction")}
-        >
-          <Text className="text-white text-4xl font-bold">+</Text>
-        </Pressable>
-      </View>
+      {!shouldHideElement && (
+        <View>
+          <Pressable
+            className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
+            onPress={() => router.push("/new-transaction")}
+          >
+            <Text className="text-white text-4xl font-bold">+</Text>
+          </Pressable>
+        </View>
+      )}
     </SafeAreaProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { useForecastData } from "@/common/hooks/use-forecast-data-forecast.hook";
-import { useStoreData } from "@/common/hooks/use-store-data.hook";
+import { useStoreData } from "@/common/hooks/useStoreData.hook";
 import { ForecastElement } from "@/components/organisms/forecast/forecast-element.organism";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { usePrioritiesStore } from "@/stores/priorities.store";
