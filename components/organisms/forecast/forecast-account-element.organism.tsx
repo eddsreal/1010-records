@@ -17,6 +17,7 @@ type Props = {
 };
 
 export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
+  const { syncForecastDetail } = useForecastStore();
   const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([]);
 
   const getForecastDetail = useCallback(async () => {
@@ -24,12 +25,13 @@ export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
       .select()
       .from(schema.forecastDetail)
       .where(eq(schema.forecastDetail.accountId, account.id));
+
     setForecastDetail(detail);
   }, [account.id]);
 
   useEffect(() => {
     getForecastDetail();
-  }, [getForecastDetail]);
+  }, [getForecastDetail, syncForecastDetail]);
 
   return (
     <View className="flex-row items-center">
@@ -40,11 +42,10 @@ export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
       <View className="w-8/12">
         <ScrollView horizontal>
           {Array.from({ length: 12 }).map((_, monthIndex) => {
+            const monthNumber = monthIndex + 1;
+
             const monthData = forecastDetail.find(
-              (fd) =>
-                fd.month === monthIndex &&
-                fd.accountId === account.id &&
-                fd.priorityId === null,
+              (fd) => fd.month === monthNumber && fd.accountId === account.id,
             );
             const amount = monthData?.amount || 0;
             const monthName = new Date(2024, monthIndex).toLocaleString(

@@ -2,8 +2,11 @@ import {
   MonthValues,
   useForecastDetail,
 } from "@/common/hooks/use-forecast-detail.hook";
+import * as schema from "@/database/schema";
 import { useForecastStore } from "@/stores/forecast.store";
+import { drizzle } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
+import { openDatabaseSync } from "expo-sqlite";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
@@ -12,6 +15,8 @@ const months = Array.from({ length: 12 }).map((_, monthIndex) => {
     month: "long",
   });
 });
+const expoDb = openDatabaseSync("1010records");
+const db = drizzle(expoDb);
 
 export default function EditForecastElement() {
   const { forecastDetailModal } = useForecastStore();
@@ -20,7 +25,6 @@ export default function EditForecastElement() {
 
   const { control, handleSubmit, setValue, reset } = useForm<MonthValues>({
     defaultValues: {
-      "0": 0,
       "1": 0,
       "2": 0,
       "3": 0,
@@ -32,6 +36,7 @@ export default function EditForecastElement() {
       "9": 0,
       "10": 0,
       "11": 0,
+      "12": 0,
     },
   });
 
@@ -40,10 +45,15 @@ export default function EditForecastElement() {
   }, [getForecastDetail]);
 
   useEffect(() => {
-    forecastDetail.forEach((d) => {
-      setValue((d.month - 1).toString(), d.amount);
-    });
-  }, [forecastDetail, setValue]);
+    if (forecastDetail.length > 0) {
+      reset();
+
+      forecastDetail.forEach((d) => {
+        const monthIndex = d.month;
+        setValue(monthIndex.toString(), d.amount);
+      });
+    }
+  }, [forecastDetail, setValue, reset]);
 
   const onSubmit = async (data: MonthValues) => {
     await saveForecasts(data);
@@ -93,7 +103,7 @@ export default function EditForecastElement() {
               <View className="w-1/2 px-4 py-2">
                 <Controller
                   control={control}
-                  name={monthIndex.toString()}
+                  name={(monthIndex + 1).toString()}
                   render={({ field }) => (
                     <TextInput
                       className="border-2 border-gray-300 rounded-md p-2"
@@ -113,6 +123,12 @@ export default function EditForecastElement() {
 
       <View className="flex-row justify-end mt-4 space-x-2 h-[10%]">
         <Button title="Guardar" onPress={handleSubmit(onSubmit)} />
+        <Button
+          title="db reset"
+          onPress={() =>
+            db.delete(schema.forecastDetail).then(() => console.log("deleted"))
+          }
+        />
         <Button title="Cancelar" onPress={handleCancel} color="gray" />
       </View>
     </View>

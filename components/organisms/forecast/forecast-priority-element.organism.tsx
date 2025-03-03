@@ -60,7 +60,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
                 {months.map((month, monthIndex) => {
                   const monthData = forecastDetail.find(
                     (fd) =>
-                      fd.month === monthIndex &&
+                      fd.month === monthIndex + 1 &&
                       fd.categoryId === category.id &&
                       fd.priorityId === priority.id,
                   );

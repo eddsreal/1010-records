@@ -6,7 +6,6 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import { ForecastType } from "../enums/forecast.enum";
-
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
 
@@ -49,30 +48,52 @@ export function useForecastDetail() {
           )
         );
     }
-
     setForecastDetail(detail);
   }, [forecastDetailModal]);
 
   const saveForecasts = useCallback(
     async (data: MonthValues) => {
       if (forecastDetailModal?.priority && forecastDetailModal?.category) {
-        Object.keys(data).forEach(async (key) => {
+        for (const key of Object.keys(data)) {
+          const monthIndex = parseInt(key);
+          const monthNumber = monthIndex;
+
           await db
             .insert(schema.forecastDetail)
             .values({
-              month: parseInt(key) + 1,
+              month: monthNumber,
               amount: data[key],
               priorityId: forecastDetailModal?.priority?.id,
               categoryId: forecastDetailModal?.category?.id,
               forecastType: ForecastType.PROJECTED,
               forecastId: yearForecast?.id,
-              id: forecastDetail.find((fd) => fd.month === parseInt(key))?.id,
+              id: forecastDetail.find((fd) => fd.month === monthNumber)?.id,
             })
             .onConflictDoUpdate({
               target: [schema.forecastDetail.id],
               set: { amount: data[key] },
             });
-        });
+        }
+      } else if (forecastDetailModal?.account) {
+        for (const key of Object.keys(data)) {
+          const monthIndex = parseInt(key);
+          const monthNumber = monthIndex;
+
+          await db
+            .insert(schema.forecastDetail)
+            .values({
+              month: monthNumber,
+              amount: data[key],
+              accountId: forecastDetailModal?.account?.id,
+              forecastType: ForecastType.PROJECTED,
+              forecastId: yearForecast?.id,
+              id: forecastDetail.find((fd) => fd.month === monthNumber)?.id,
+            })
+            .onConflictDoUpdate({
+              target: [schema.forecastDetail.id],
+              set: { amount: data[key] },
+            });
+        }
       }
 
       useForecastStore.setState({
