@@ -59,10 +59,13 @@ export default function TabLayout() {
   return (
     <SafeAreaProvider>
       <Tabs
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: colors.primary,
-        }}
+          tabBarStyle: {
+            display: route.name === "edit-forecast-element" ? "none" : "flex",
+          },
+        })}
       >
         <Tabs.Screen
           name="index"
@@ -83,9 +86,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="forecast-wizzard"
+          name="forecast"
           options={{
-            title: "Proyección",
+            title: "Presupuesto",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="bar-chart-sharp" color={color} size={size} />
             ),
@@ -105,6 +108,12 @@ export default function TabLayout() {
         />
         <Tabs.Screen
           name="categories-wizzard"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="edit-forecast-element"
           options={{
             href: null,
           }}

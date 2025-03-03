@@ -73,12 +73,10 @@ export default function NewTransactionView() {
         ),
       );
 
-    console.log(forecastDetail);
     setForecastDetail(forecastDetail);
   }, [newTransaction.selectedPriority, category]);
 
   useEffect(() => {
-    console.log(category, newTransaction.selectedPriority);
     if (category && newTransaction.selectedPriority) {
       getForecastDetail();
     }

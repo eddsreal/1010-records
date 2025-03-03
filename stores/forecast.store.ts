@@ -13,7 +13,6 @@ type ForecastStoreType = {
   forecastsDetail: ForecastDetailPopulated[];
   syncForecastDetail: boolean;
   forecastDetailModal: {
-    open: boolean;
     priority?: PriorityWithCategories;
     category?: Category;
     account?: Account;
@@ -26,7 +25,6 @@ export const useForecastStore = create<ForecastStoreType>()((set) => ({
   forecastsDetail: [],
   syncForecastDetail: false,
   forecastDetailModal: {
-    open: false,
     priority: undefined,
     category: undefined,
     account: undefined,
