@@ -32,7 +32,7 @@ export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
   }, [getForecastDetail]);
 
   return (
-    <View>
+    <View className="flex-row items-center">
       <View className="w-4/12">
         <Text className="text-lg font-bold text-gray-500">{account.name}</Text>
       </View>

@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite";
 import { useCallback, useState } from "react";
+import { ForecastType } from "../enums/forecast.enum";
 
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
@@ -33,7 +34,8 @@ export function useForecastDetail() {
             eq(
               schema.forecastDetail.categoryId,
               forecastDetailModal.category.id
-            )
+            ),
+            eq(schema.forecastDetail.forecastType, ForecastType.PROJECTED)
           )
         );
     } else if (forecastDetailModal.account) {
@@ -41,7 +43,10 @@ export function useForecastDetail() {
         .select()
         .from(schema.forecastDetail)
         .where(
-          eq(schema.forecastDetail.accountId, forecastDetailModal.account.id)
+          and(
+            eq(schema.forecastDetail.accountId, forecastDetailModal.account.id),
+            eq(schema.forecastDetail.forecastType, ForecastType.PROJECTED)
+          )
         );
     }
 
@@ -59,7 +64,7 @@ export function useForecastDetail() {
               amount: data[key],
               priorityId: forecastDetailModal?.priority?.id,
               categoryId: forecastDetailModal?.category?.id,
-              forecastType: "detail",
+              forecastType: ForecastType.PROJECTED,
               forecastId: yearForecast?.id,
               id: forecastDetail.find((fd) => fd.month === parseInt(key))?.id,
             })
@@ -83,23 +88,10 @@ export function useForecastDetail() {
     [forecastDetailModal, yearForecast, forecastDetail]
   );
 
-  const closeModal = useCallback(() => {
-    useForecastStore.setState({
-      forecastDetailModal: {
-        ...forecastDetailModal,
-        priority: undefined,
-        category: undefined,
-        account: undefined,
-        month: undefined,
-      },
-    });
-  }, [forecastDetailModal]);
-
   return {
     forecastDetail,
     getForecastDetail,
     saveForecasts,
-    closeModal,
     db,
   };
 }

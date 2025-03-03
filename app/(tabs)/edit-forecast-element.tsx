@@ -48,6 +48,7 @@ export default function EditForecastElement() {
   const onSubmit = async (data: MonthValues) => {
     await saveForecasts(data);
     reset();
+    router.push("/forecast");
   };
 
   const handleCancel = () => {

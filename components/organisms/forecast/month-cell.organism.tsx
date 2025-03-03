@@ -9,9 +9,14 @@ type Props = {
 
 export const MonthCell: React.FC<Props> = ({ monthName, amount, onPress }) => {
   return (
-    <View className="p-2 border-r border-gray-200 items-center w-40">
-      <Text className="text-sm font-bold text-primary">{monthName}</Text>
-      <Text className="text-lg mt-1 text-gray-500" onPress={onPress}>
+    <View className="py-2 px-4 border-r border-gray-200 items-center">
+      <Text className="text-sm font-bold text-primary capitalize">
+        {monthName}
+      </Text>
+      <Text
+        className="text-lg mt-1 text-gray-500 w-32 overflow-clip text-center"
+        onPress={onPress}
+      >
         $
         {amount.toLocaleString("es-CO", {
           minimumFractionDigits: 2,
