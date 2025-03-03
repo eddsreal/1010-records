@@ -4,14 +4,21 @@ import {
 } from "@/common/enums/transactions.enum";
 import { inputStyles } from "@/common/styles/input.styles";
 import { CurrencyInputAtom } from "@/components/atoms/currency-input.atom";
-import { Category } from "@/database/schema";
+import * as schema from "@/database/schema";
+import { Category, ForecastDetail } from "@/database/schema";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { usePrioritiesStore } from "@/stores/priorities.store";
 import { useTransactionsStore } from "@/stores/transactions.store";
+import { and, eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
+import { openDatabaseSync } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { Picker, TextField } from "react-native-ui-lib";
+const expoDb = openDatabaseSync("1010records");
+const db = drizzle(expoDb);
 
 interface FormValues {
   amount: number;
@@ -45,7 +52,37 @@ export default function NewTransactionView() {
 
   const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE;
   const type = watch("type");
+  const category = watch("category");
   const isIncome = type === TransactionTypeEnum.INCOME;
+
+  const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([]);
+
+  const getForecastDetail = useCallback(async () => {
+    const month = new Date().getMonth() + 1;
+    const forecastDetail = await db
+      .select()
+      .from(schema.forecastDetail)
+      .where(
+        and(
+          eq(
+            schema.forecastDetail.priorityId,
+            newTransaction.selectedPriority.id,
+          ),
+          eq(schema.forecastDetail.categoryId, category),
+          eq(schema.forecastDetail.month, month),
+        ),
+      );
+
+    console.log(forecastDetail);
+    setForecastDetail(forecastDetail);
+  }, [newTransaction.selectedPriority, category]);
+
+  useEffect(() => {
+    console.log(category, newTransaction.selectedPriority);
+    if (category && newTransaction.selectedPriority) {
+      getForecastDetail();
+    }
+  }, [category, newTransaction.selectedPriority, getForecastDetail]);
 
   const renderHeader = () => {
     const currentMonth = new Date().toLocaleString("es-ES", {
@@ -356,7 +393,10 @@ export default function NewTransactionView() {
 
   const renderForecastComparison = () => {
     const amount = watch("amount");
-    const proyected = 100000;
+    const proyected = forecastDetail.reduce(
+      (acc, curr) => acc + curr.amount,
+      0,
+    );
     const isMoreThanProyected = amount > proyected;
     const isZero = amount - proyected === 0;
 

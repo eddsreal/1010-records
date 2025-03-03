@@ -83,7 +83,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="forecast"
+          name="forecast-wizzard"
           options={{
             title: "Proyección",
             tabBarIcon: ({ color, size }) => (
@@ -109,18 +109,12 @@ export default function TabLayout() {
             href: null,
           }}
         />
-        <Tabs.Screen
-          name="forecast-wizzard"
-          options={{
-            href: null,
-          }}
-        />
       </Tabs>
       <StatusBar style="dark" />
       <View>
         <Pressable
           className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
-          onPress={() => router.push("/forecast-wizzard")}
+          onPress={() => router.push("/new-transaction")}
         >
           <Text className="text-white text-4xl font-bold">+</Text>
         </Pressable>
