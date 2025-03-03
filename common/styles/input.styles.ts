@@ -1,14 +1,12 @@
 export const inputStyles = {
-  containerStyle: {
-    marginBottom: 16,
-  },
   fieldStyle: {
     padding: 20,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 16,
+    borderBottomWidth: 1,
+    borderColor: "#6b7280",
+    borderRadius: 5,
     fontWeight: "bold",
     fontSize: 20,
-    color: "black",
+    color: "#6b7280",
+    marginBottom: 16,
   },
 };

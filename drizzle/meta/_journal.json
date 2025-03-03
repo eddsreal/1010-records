@@ -5,43 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1740282823679,
-      "tag": "0000_aspiring_nicolaos",
+      "when": 1741035877083,
+      "tag": "0000_clever_skin",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1740283467779,
+      "when": 1741035895616,
       "tag": "0001_seed-priorities",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1740330362688,
-      "tag": "0002_dapper_frank_castle",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1740352753021,
-      "tag": "0003_tricky_silk_fever",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1740353216447,
-      "tag": "0004_yummy_loki",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1740355148124,
-      "tag": "0005_fine_ink",
       "breakpoints": true
     }
   ]

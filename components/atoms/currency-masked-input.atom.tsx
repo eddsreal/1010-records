@@ -8,8 +8,7 @@ interface Props {
   placeholder?: string;
   onChangeText: (value: string) => void;
   onBlur?: () => void;
-  containerStyle?: ViewStyle;
-  placeholderClassName?: string;
+  style?: ViewStyle;
   maxLength?: number;
   label?: string;
 }
@@ -19,8 +18,7 @@ export const CurrencyMaskedInput: React.FC<Props> = ({
   placeholder,
   onChangeText,
   onBlur,
-  containerStyle,
-  placeholderClassName,
+  style,
   maxLength = 15,
   label,
 }) => {
@@ -35,8 +33,8 @@ export const CurrencyMaskedInput: React.FC<Props> = ({
     (value: string | undefined) => {
       if (!value) {
         return (
-          <Text className={placeholderClassName || "text-gray-500"}>
-            {placeholder || "Ingrese un monto"}
+          <Text className={"text-gray-500 text-xl font-bold"}>
+            {placeholder}
           </Text>
         );
       }
@@ -50,12 +48,7 @@ export const CurrencyMaskedInput: React.FC<Props> = ({
         </Text>
       );
     },
-    [
-      formatToCurrency,
-      parseCurrencyToNumber,
-      placeholder,
-      placeholderClassName,
-    ],
+    [formatToCurrency, parseCurrencyToNumber, placeholder],
   );
 
   const handleChangeText = useCallback(
@@ -73,7 +66,8 @@ export const CurrencyMaskedInput: React.FC<Props> = ({
       <MaskedInput
         migrate
         keyboardType="numeric"
-        containerStyle={containerStyle}
+        className=""
+        containerStyle={style}
         renderMaskedText={renderMaskedText}
         formatter={formatter}
         initialValue={value}

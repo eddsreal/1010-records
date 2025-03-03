@@ -1,5 +1,5 @@
 import { inputStyles } from "@/common/styles/input.styles";
-import { CurrencyInputAtom } from "@/components/atoms/currency-input.atom";
+import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
 import * as schema from "@/database/schema";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { drizzle } from "drizzle-orm/expo-sqlite";
@@ -59,7 +59,6 @@ export default function NewAccount() {
             placeholder={"Nombre de cuenta"}
             placeholderClassName="text-gray-500"
             fieldStyle={inputStyles.fieldStyle}
-            containerStyle={inputStyles.containerStyle}
           />
         )}
       />
@@ -75,23 +74,28 @@ export default function NewAccount() {
             placeholder={"Descripción"}
             placeholderClassName="text-gray-500"
             fieldStyle={inputStyles.fieldStyle}
-            containerStyle={inputStyles.containerStyle}
           />
         )}
       />
 
       <Controller
         control={control}
-        name="balance"
-        render={({ field }) => (
-          <CurrencyInputAtom
-            onChangeText={field.onChange}
-            onBlur={field.onBlur}
-            placeholder={"Balance"}
-            placeholderClassName="text-gray-500"
-            containerStyle={inputStyles.containerStyle}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <CurrencyMaskedInput
+            label={"Balance"}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value?.toString()}
+            placeholder={"Ingrese un monto"}
+            style={{
+              ...inputStyles.fieldStyle,
+            }}
           />
         )}
+        name="balance"
       />
 
       <View className="flex-row justify-around items-center">

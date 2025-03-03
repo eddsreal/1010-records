@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import { ForecastType } from "../enums/forecast.enum";
+import { TransactionTypeEnum } from "../enums/transactions.enum";
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
 
@@ -67,6 +68,7 @@ export function useForecastDetail() {
               categoryId: forecastDetailModal?.category?.id,
               forecastType: ForecastType.PROJECTED,
               forecastId: yearForecast?.id,
+              transactionType: TransactionTypeEnum.EXPENSE,
               id: forecastDetail.find((fd) => fd.month === monthNumber)?.id,
             })
             .onConflictDoUpdate({
@@ -87,6 +89,7 @@ export function useForecastDetail() {
               accountId: forecastDetailModal?.account?.id,
               forecastType: ForecastType.PROJECTED,
               forecastId: yearForecast?.id,
+              transactionType: TransactionTypeEnum.INCOME,
               id: forecastDetail.find((fd) => fd.month === monthNumber)?.id,
             })
             .onConflictDoUpdate({
