@@ -103,10 +103,14 @@ export default function NewTransactionView() {
       }
 
       if (
-        data.amount &&
-        data.category &&
-        newTransaction.selectedPriority?.id &&
-        data.account
+        (data.amount &&
+          data.category &&
+          newTransaction.selectedPriority?.id &&
+          data.account &&
+          data.type === TransactionTypeEnum.EXPENSE) ||
+        (data.amount &&
+          data.account &&
+          data.type === TransactionTypeEnum.INCOME)
       ) {
         dataToUpdate.status = TransactionStatusEnum.COMPLETED;
       }
