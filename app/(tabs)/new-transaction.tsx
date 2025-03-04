@@ -1,3 +1,11 @@
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { router } from "expo-router";
+import { openDatabaseSync } from "expo-sqlite";
+import React, { useCallback, useEffect } from "react";
+import { Controller } from "react-hook-form";
+import { ScrollView, Text, View } from "react-native";
+
 import {
   TransactionFormTypeEnum,
   TransactionStatusEnum,
@@ -7,7 +15,14 @@ import {
   TransactionFormValues,
   useTransactionForm,
 } from "@/common/hooks/use-transaction-form";
+
+import * as schema from "@/database/schema";
+
+import { usePrioritiesStore } from "@/stores/priorities.store";
+import { useTransactionsStore } from "@/stores/transactions.store";
+
 import { inputStyles } from "@/common/styles/input.styles";
+
 import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
 import { AccountSelector } from "@/components/organisms/transaction/account-selector.organism";
 import { ActionButtons } from "@/components/organisms/transaction/action-buttons.organism";
@@ -15,22 +30,14 @@ import { ForecastComparison } from "@/components/organisms/transaction/forecast-
 import { FormHeader } from "@/components/organisms/transaction/form-header.organism";
 import { MovementTypeSelector } from "@/components/organisms/transaction/movement-type-selector.organism";
 import { PrioritySelector } from "@/components/organisms/transaction/priority-selector.organism";
-import * as schema from "@/database/schema";
-import { usePrioritiesStore } from "@/stores/priorities.store";
-import { useTransactionsStore } from "@/stores/transactions.store";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { router } from "expo-router";
-import { openDatabaseSync } from "expo-sqlite";
-import { useCallback, useEffect } from "react";
-import { Controller } from "react-hook-form";
-import { ScrollView, Text, View } from "react-native";
+
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
 
 export default function NewTransactionView() {
   const { mode, editTransaction, newTransaction } = useTransactionsStore();
   const { priorities } = usePrioritiesStore();
+
   const {
     control,
     setValue,
@@ -52,22 +59,38 @@ export default function NewTransactionView() {
   }, [category, getForecastDetail]);
 
   const setTransactionValues = useCallback(() => {
-    if (editTransaction) {
-      useTransactionsStore.setState({
-        mode: TransactionFormTypeEnum.COMPLETE,
-      });
-      setValue("amount", editTransaction.amount);
-      setValue("type", editTransaction.type as TransactionTypeEnum);
+    if (!editTransaction) return;
 
-      if (editTransaction.accountId) {
-        setValue("account", editTransaction.accountId);
-      }
+    useTransactionsStore.setState({
+      mode: TransactionFormTypeEnum.COMPLETE,
+    });
 
-      if (editTransaction.categoryId) {
-        setValue("category", editTransaction.categoryId);
+    setValue("amount", editTransaction.amount);
+    setValue("type", editTransaction.type as TransactionTypeEnum);
+
+    if (editTransaction.accountId) {
+      setValue("account", editTransaction.accountId);
+    }
+
+    if (editTransaction.categoryId) {
+      setValue("category", editTransaction.categoryId);
+    }
+
+    if (editTransaction.priorityId) {
+      const selectedPriority = priorities.find(
+        (priority) => priority.id === editTransaction.priorityId,
+      );
+
+      if (selectedPriority) {
+        useTransactionsStore.setState({
+          newTransaction: {
+            ...newTransaction,
+            selectedPriority,
+          },
+        });
       }
     }
-  }, [editTransaction, setValue]);
+  }, [editTransaction, priorities, newTransaction, setValue]);
 
   useEffect(() => {
     if (editTransaction) {
@@ -82,7 +105,11 @@ export default function NewTransactionView() {
         type: data.type,
         status: TransactionStatusEnum.PENDING,
       });
+
+      router.back();
+      return;
     }
+
     if (isCompleteMode && editTransaction) {
       const dataToUpdate: Partial<schema.Transaction> = {
         amount: data.amount,
@@ -95,35 +122,33 @@ export default function NewTransactionView() {
       }
 
       if (newTransaction.selectedPriority?.id) {
-        dataToUpdate.priorityId = newTransaction.selectedPriority?.id;
+        dataToUpdate.priorityId = newTransaction.selectedPriority.id;
       }
 
       if (data.category) {
         dataToUpdate.categoryId = data.category;
       }
 
-      if (
-        (data.amount &&
+      const isFullyComplete =
+        !!(
+          data.amount &&
           data.category &&
           newTransaction.selectedPriority?.id &&
-          data.account &&
-          data.type === TransactionTypeEnum.EXPENSE) ||
-        (data.amount &&
-          data.account &&
-          data.type === TransactionTypeEnum.INCOME)
-      ) {
+          data.account
+        ) ||
+        (data.amount && data.account);
+
+      if (isFullyComplete) {
         dataToUpdate.status = TransactionStatusEnum.COMPLETED;
       }
-
-      console.log(dataToUpdate);
 
       await db
         .update(schema.transaction)
         .set(dataToUpdate)
-        .where(eq(schema.transaction.id, editTransaction?.id as number));
-    }
+        .where(eq(schema.transaction.id, editTransaction.id as number));
 
-    router.back();
+      router.back();
+    }
   };
 
   return (
@@ -136,18 +161,17 @@ export default function NewTransactionView() {
 
       <View>
         <MovementTypeSelector isIncome={isIncome} setValue={setValue} />
+
         <Controller
           control={control}
-          rules={{
-            required: true,
-          }}
+          rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
             <CurrencyMaskedInput
-              label={"Monto"}
+              label="Monto"
               onChangeText={onChange}
               onBlur={onBlur}
               value={value?.toString()}
-              placeholder={"Ingrese un monto"}
+              placeholder="Ingrese un monto"
               style={{
                 ...inputStyles.fieldStyle,
               }}
