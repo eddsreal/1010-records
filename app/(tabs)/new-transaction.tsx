@@ -23,6 +23,7 @@ import { useTransactionsStore } from "@/stores/transactions.store";
 
 import { inputStyles } from "@/common/styles/input.styles";
 
+import { useForecast } from "@/common/hooks/use-forecast.hook";
 import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
 import { AccountSelector } from "@/components/organisms/transaction/account-selector.organism";
 import { ActionButtons } from "@/components/organisms/transaction/action-buttons.organism";
@@ -37,6 +38,7 @@ const db = drizzle(expoDb);
 export default function NewTransactionView() {
   const { mode, editTransaction, newTransaction } = useTransactionsStore();
   const { priorities } = usePrioritiesStore();
+  const { upsertForecastDetail } = useForecast();
 
   const {
     control,
@@ -48,6 +50,7 @@ export default function NewTransactionView() {
     amount,
     getForecastDetail,
     getForecastInfo,
+    getExecutedForecastByPriorityAndCategory,
   } = useTransactionForm();
 
   const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE;
@@ -55,8 +58,9 @@ export default function NewTransactionView() {
   useEffect(() => {
     if (category) {
       getForecastDetail();
+      getExecutedForecastByPriorityAndCategory();
     }
-  }, [category, getForecastDetail]);
+  }, [category, getForecastDetail, getExecutedForecastByPriorityAndCategory]);
 
   const setTransactionValues = useCallback(() => {
     if (!editTransaction) return;
@@ -140,6 +144,7 @@ export default function NewTransactionView() {
 
       if (isFullyComplete) {
         dataToUpdate.status = TransactionStatusEnum.COMPLETED;
+        await upsertForecastDetail(dataToUpdate);
       }
 
       await db

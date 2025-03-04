@@ -4,18 +4,13 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 export const FormHeader: React.FC = () => {
-  const { mode } = useTransactionsStore();
+  const { mode, month, year } = useTransactionsStore();
   const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE;
-
-  const currentMonth = new Date().toLocaleString("es-ES", {
-    month: "2-digit",
-  });
-  const currentYear = new Date().getFullYear();
 
   return (
     <View className="flex-row justify-between items-center mb-4">
       <Text className="text-app-primary text-lg">
-        {currentYear}-{currentMonth}
+        {year}-{month}
       </Text>
       <View className="flex-row items-center">
         <Pressable

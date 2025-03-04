@@ -1,4 +1,5 @@
 import { useCurrency } from "@/common/hooks/use-currency.hook";
+import { ForecastDetail } from "@/database/schema";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -8,6 +9,7 @@ type Props = {
   isMoreThanProyected: boolean;
   isZero: boolean;
   difference: number;
+  executedForecast?: ForecastDetail;
 };
 
 export const ForecastComparison: React.FC<Props> = ({
@@ -16,6 +18,7 @@ export const ForecastComparison: React.FC<Props> = ({
   isMoreThanProyected,
   isZero,
   difference,
+  executedForecast,
 }) => {
   const { formatToCurrency } = useCurrency();
 
@@ -36,7 +39,9 @@ export const ForecastComparison: React.FC<Props> = ({
             Ejecutado + Esta Transacción
           </Text>
           <Text className="text-app-gray text-lg font-bold">
-            {formatToCurrency(amount)}
+            {executedForecast
+              ? formatToCurrency(executedForecast.amount + amount)
+              : formatToCurrency(amount)}
           </Text>
         </View>
       </View>

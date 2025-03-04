@@ -22,8 +22,11 @@ export interface TransactionFormValues {
 }
 
 export function useTransactionForm() {
-  const { newTransaction } = useTransactionsStore();
+  const { newTransaction, year, month } = useTransactionsStore();
   const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([]);
+  const [executedForecast, setExecutedForecast] = useState<
+    ForecastDetail | undefined
+  >(undefined);
 
   const {
     control,
@@ -82,8 +85,36 @@ export function useTransactionForm() {
       isMoreThanProyected,
       isZero,
       difference: proyected - amount,
+      executedForecast,
     };
-  }, [forecastDetail, amount]);
+  }, [forecastDetail, amount, executedForecast]);
+
+  const getExecutedForecastByPriorityAndCategory = useCallback(async () => {
+    if (newTransaction.selectedPriority && category) {
+      const forecast = await db
+        .select()
+        .from(schema.forecast)
+        .where(eq(schema.forecast.year, parseInt(year)));
+
+      const forecastDetail = await db
+        .select()
+        .from(schema.forecastDetail)
+        .where(
+          and(
+            eq(
+              schema.forecastDetail.priorityId,
+              newTransaction.selectedPriority.id
+            ),
+            eq(schema.forecastDetail.categoryId, category),
+            eq(schema.forecastDetail.forecastType, ForecastType.EXECUTED),
+            eq(schema.forecastDetail.month, parseInt(month)),
+            eq(schema.forecastDetail.forecastId, forecast[0].id)
+          )
+        );
+
+      setExecutedForecast(forecastDetail[0]);
+    }
+  }, [newTransaction.selectedPriority, category, month, year]);
 
   return {
     control,
@@ -99,5 +130,7 @@ export function useTransactionForm() {
     forecastDetail,
     getForecastDetail,
     getForecastInfo,
+    executedForecast,
+    getExecutedForecastByPriorityAndCategory,
   };
 }
