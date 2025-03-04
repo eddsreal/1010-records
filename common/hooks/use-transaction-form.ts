@@ -77,14 +77,16 @@ export function useTransactionForm() {
       (acc, curr) => acc + curr.amount,
       0
     );
-    const isMoreThanProyected = amount > proyected;
+    const consolidatedExecutedForecast =
+      Number(executedForecast?.amount) + Number(amount) || 0;
+    const isMoreThanProyected = consolidatedExecutedForecast > proyected;
     const isZero = amount - proyected === 0;
 
     return {
       proyected,
       isMoreThanProyected,
       isZero,
-      difference: proyected - amount,
+      difference: proyected - consolidatedExecutedForecast,
       executedForecast,
     };
   }, [forecastDetail, amount, executedForecast]);

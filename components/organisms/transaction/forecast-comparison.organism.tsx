@@ -40,7 +40,9 @@ export const ForecastComparison: React.FC<Props> = ({
           </Text>
           <Text className="text-app-gray text-lg font-bold">
             {executedForecast
-              ? formatToCurrency(executedForecast.amount + amount)
+              ? formatToCurrency(
+                  Number(executedForecast.amount) + Number(amount),
+                )
               : formatToCurrency(amount)}
           </Text>
         </View>
