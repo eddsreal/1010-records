@@ -1,21 +1,18 @@
-import { TransactionFormValues } from "@/common/hooks/use-transaction-form";
+import { TransactionFormValues } from "@/app/(tabs)/new-transaction";
 import { Category } from "@/database/schema";
 import { usePrioritiesStore } from "@/stores/priorities.store";
 import { useTransactionsStore } from "@/stores/transactions.store";
 import { router } from "expo-router";
 import React from "react";
-import { Control, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { Picker } from "react-native-ui-lib";
 
-type Props = {
-  control: Control<TransactionFormValues>;
-};
-
-export const PrioritySelector: React.FC<Props> = ({ control }) => {
+export const PrioritySelector: React.FC = () => {
   const { priorities } = usePrioritiesStore();
   const { newTransaction } = useTransactionsStore();
   const selectedPriority = newTransaction.selectedPriority;
+  const { control } = useFormContext<TransactionFormValues>()
 
   return (
     <View className="mb-4">

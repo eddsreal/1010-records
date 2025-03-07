@@ -1,10 +1,9 @@
 import { router } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
-import { Controller } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { ScrollView, Text, View } from 'react-native'
 
 import { TransactionFormTypeEnum, TransactionTypeEnum } from '@/common/enums/transactions.enum'
-import { TransactionFormValues, useTransactionForm } from '@/common/hooks/use-transaction-form'
 
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -21,20 +20,34 @@ import { MovementTypeSelector } from '@/components/organisms/transaction/movemen
 import { PrioritySelector } from '@/components/organisms/transaction/priority-selector.organism'
 import { Transaction } from '@/database/schema'
 
+export interface TransactionFormValues {
+	amount: number
+	currency: string
+	type: TransactionTypeEnum
+	account: number
+	priority: number
+	category: number
+}
+
 export default function NewTransactionView() {
 	const { mode, editTransaction, newTransaction } = useTransactionsStore()
 	const { priorities } = usePrioritiesStore()
 	const { createTransaction } = useTransactions()
 
-	const {
-		control,
-		setValue,
-		reset,
-		handleSubmit,
-		isIncome,
-		category,
-		amount,
-	} = useTransactionForm()
+	const methods = useForm<TransactionFormValues>({
+		mode: 'all',
+		defaultValues: {
+			type: TransactionTypeEnum.EXPENSE,
+			account: undefined,
+			priority: undefined,
+			category: undefined,
+		},
+	})
+
+	const type = methods.watch('type')
+	const amount = methods.watch('amount')
+	const category = methods.watch('category')
+	const isIncome = type === TransactionTypeEnum.INCOME
 
 	const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE
 
@@ -45,15 +58,15 @@ export default function NewTransactionView() {
 			mode: TransactionFormTypeEnum.COMPLETE,
 		})
 
-		setValue('amount', editTransaction.amount)
-		setValue('type', editTransaction.type as TransactionTypeEnum)
+		methods.setValue('amount', editTransaction.amount)
+		methods.setValue('type', editTransaction.type as TransactionTypeEnum)
 
 		if (editTransaction.accountId) {
-			setValue('account', editTransaction.accountId)
+			methods.setValue('account', editTransaction.accountId)
 		}
 
 		if (editTransaction.categoryId) {
-			setValue('category', editTransaction.categoryId)
+			methods.setValue('category', editTransaction.categoryId)
 		}
 
 		if (editTransaction.priorityId) {
@@ -68,7 +81,7 @@ export default function NewTransactionView() {
 				})
 			}
 		}
-	}, [editTransaction, priorities, newTransaction, setValue])
+	}, [editTransaction, priorities, newTransaction, methods.setValue])
 
 	useEffect(() => {
 		if (editTransaction) {
@@ -90,41 +103,43 @@ export default function NewTransactionView() {
 
 	return (
 		<ScrollView className="p-4 bg-white">
-			<Text className="text-primary text-5xl font-bold mb-4">Registro de transacción</Text>
+			<FormProvider {...methods}>
+				<Text className="text-primary text-5xl font-bold mb-4">Registro de transacción</Text>
 
-			<FormHeader />
+				<FormHeader />
 
-			<View>
-				<MovementTypeSelector isIncome={isIncome} setValue={setValue} />
+				<View>
+					<MovementTypeSelector isIncome={isIncome} />
 
-				<Controller
-					control={control}
-					rules={{ required: true }}
-					render={({ field: { onChange, onBlur, value } }) => (
-						<CurrencyMaskedInput
-							label="Monto"
-							onChangeText={onChange}
-							onBlur={onBlur}
-							value={value?.toString()}
-							placeholder="Ingrese un monto"
-							style={{
-								...inputStyles.fieldStyle,
-							}}
-						/>
+					<Controller
+						control={methods.control}
+						rules={{ required: true }}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<CurrencyMaskedInput
+								label="Monto"
+								onChangeText={onChange}
+								onBlur={onBlur}
+								value={value?.toString()}
+								placeholder="Ingrese un monto"
+								style={{
+									...inputStyles.fieldStyle,
+								}}
+							/>
+						)}
+						name="amount"
+					/>
+
+					{isCompleteMode && <AccountSelector />}
+
+					{isCompleteMode && !isIncome && <PrioritySelector />}
+
+					{isCompleteMode && !isIncome && category && newTransaction.selectedPriority && amount > 0 && (
+						<ForecastComparison />
 					)}
-					name="amount"
-				/>
 
-				{isCompleteMode && <AccountSelector control={control} />}
-
-				{isCompleteMode && !isIncome && <PrioritySelector control={control} />}
-
-				{isCompleteMode && !isIncome && category && newTransaction.selectedPriority && amount > 0 && (
-					<ForecastComparison amount={amount} priorityId={newTransaction.selectedPriority.id} categoryId={category} />
-				)}
-
-				<ActionButtons onSave={handleSubmit(onSubmit)} onReset={reset} />
-			</View>
+					<ActionButtons onSubmit={onSubmit} />
+				</View>
+			</FormProvider>
 		</ScrollView>
 	)
 }

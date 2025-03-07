@@ -1,19 +1,19 @@
+import { TransactionFormValues } from '@/app/(tabs)/new-transaction'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import React, { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Text, View } from 'react-native'
 
-type Props = {
-	amount: number
-	priorityId: number
-	categoryId: number
-}
-
-export const ForecastComparison: React.FC<Props> = ({ amount, priorityId, categoryId }) => {
+export const ForecastComparison: React.FC = () => {
 	const { formatToCurrency } = useCurrency()
 	const { getForecastComparison } = useForecasts()
-	const { month } = useTransactionsStore()
+	const { month, newTransaction } = useTransactionsStore()
+	const { watch } = useFormContext<TransactionFormValues>()
+	const priorityId = newTransaction.selectedPriority?.id
+	const categoryId = watch('category')
+	const amount = watch('amount')
 	const [proyected, setProyected] = useState<number>(0)
 	const [isMoreThanProyected, setIsMoreThanProyected] = useState<boolean>(false)
 	const [isZero, setIsZero] = useState<boolean>(false)

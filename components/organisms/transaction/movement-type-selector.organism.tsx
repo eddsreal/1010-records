@@ -1,18 +1,17 @@
+import { TransactionFormValues } from "@/app/(tabs)/new-transaction";
 import { TransactionTypeEnum } from "@/common/enums/transactions.enum";
-import { TransactionFormValues } from "@/common/hooks/use-transaction-form";
 import React from "react";
-import { UseFormSetValue } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 
 type Props = {
   isIncome: boolean;
-  setValue: UseFormSetValue<TransactionFormValues>;
 };
 
 export const MovementTypeSelector: React.FC<Props> = ({
   isIncome,
-  setValue,
 }) => {
+  const { setValue } = useFormContext<TransactionFormValues>()
   return (
     <View className="mb-4">
       <Text className="text-primary text-lg font-bold">

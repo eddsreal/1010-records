@@ -1,18 +1,16 @@
-import { TransactionFormValues } from "@/common/hooks/use-transaction-form";
+import { TransactionFormValues } from "@/app/(tabs)/new-transaction";
 import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import { useAccountsStore } from "@/stores/accounts.store";
 import React from "react";
-import { Control, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { Text, View } from "react-native";
 import { Picker } from "react-native-ui-lib";
 
-type Props = {
-  control: Control<TransactionFormValues>;
-};
 
-export const AccountSelector: React.FC<Props> = ({ control }) => {
+export const AccountSelector: React.FC= () => {
   const { accounts } = useAccountsStore();
   const { formatToCurrency } = useCurrency();
+  const { control } = useFormContext<TransactionFormValues>()
 
   return (
     <View className="flex-col mb-4">
