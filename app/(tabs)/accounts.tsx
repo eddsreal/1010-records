@@ -1,11 +1,16 @@
-import { useCurrency } from "@/common/hooks/use-currency.hook";
+import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
 export default function AccountsView() {
   const { accounts } = useAccountsStore();
   const { formatToCurrency } = useCurrency();
+
+  useEffect(() => {
+    useAccountsStore.setState({ refreshAccounts: true });
+  }, []);
 
   return (
     <View className="bg-white h-full p-4">

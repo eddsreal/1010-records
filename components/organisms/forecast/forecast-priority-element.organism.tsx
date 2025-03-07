@@ -1,15 +1,13 @@
-import * as schema from "@/database/schema";
+import { useForecasts } from "@/common/hooks/database/use-forecasts.hook";
 import { Category, ForecastDetail } from "@/database/schema";
-import { useForecastStore } from "@/stores/forecast.store";
+import { useForecastsStore } from "@/stores/forecasts.store";
 import { PriorityWithCategories } from "@/stores/priorities.store";
-import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { openDatabaseSync } from "expo-sqlite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { MonthCell } from "./month-cell.organism";
-
 const expoDb = openDatabaseSync("1010records");
 const db = drizzle(expoDb);
 
@@ -24,24 +22,20 @@ type Props = {
 };
 
 export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
-  const { syncForecastDetail } = useForecastStore();
+  const { forecastDetailModal } = useForecastsStore();
   const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([]);
+  const { getForecastDetail } = useForecasts();
 
-  const getForecastDetail = useCallback(async () => {
-    const forecastDetail = await db
-      .select()
-      .from(schema.forecastDetail)
-      .where(eq(schema.forecastDetail.priorityId, priority.id));
-    setForecastDetail(forecastDetail);
-
-    useForecastStore.setState({
-      syncForecastDetail: false,
-    });
-  }, [priority?.id]);
+  const getForecastDetailValues = async () => {
+    const forecastDetail = await getForecastDetail({ priorityId: priority.id });
+    setForecastDetail(forecastDetail as ForecastDetail[]);
+  };
 
   useEffect(() => {
-    getForecastDetail();
-  }, [getForecastDetail, syncForecastDetail]);
+    if (priority) {
+      getForecastDetailValues();
+    }
+  }, [priority, forecastDetailModal]);
 
   return (
     <View>
@@ -58,7 +52,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
             <View className="w-8/12">
               <ScrollView horizontal>
                 {months.map((month, monthIndex) => {
-                  const monthData = forecastDetail.find(
+                  const monthData = forecastDetail?.find(
                     (fd) =>
                       fd.month === monthIndex + 1 &&
                       fd.categoryId === category.id &&
@@ -72,7 +66,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
                       monthName={month}
                       amount={amount}
                       onPress={() => {
-                        useForecastStore.setState({
+                        useForecastsStore.setState({
                           forecastDetailModal: {
                             priority,
                             category,

@@ -1,11 +1,10 @@
-import * as schema from "@/database/schema";
+import { useForecasts } from "@/common/hooks/database/use-forecasts.hook";
 import { Account, ForecastDetail } from "@/database/schema";
-import { useForecastStore } from "@/stores/forecast.store";
-import { eq } from "drizzle-orm";
+import { useForecastsStore } from "@/stores/forecasts.store";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
 import { openDatabaseSync } from "expo-sqlite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { MonthCell } from "./month-cell.organism";
 
@@ -17,21 +16,20 @@ type Props = {
 };
 
 export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
-  const { syncForecastDetail } = useForecastStore();
+  const { forecastDetailModal } = useForecastsStore();
   const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([]);
+  const { getForecastDetail } = useForecasts();
 
-  const getForecastDetail = useCallback(async () => {
-    const detail = await db
-      .select()
-      .from(schema.forecastDetail)
-      .where(eq(schema.forecastDetail.accountId, account.id));
-
-    setForecastDetail(detail);
-  }, [account.id]);
+  const getForecastDetailValues = async () => {
+    const forecastDetail = await getForecastDetail({ accountId: account.id });
+    setForecastDetail(forecastDetail as ForecastDetail[]);
+  };
 
   useEffect(() => {
-    getForecastDetail();
-  }, [getForecastDetail, syncForecastDetail]);
+    if (account) {
+      getForecastDetailValues();
+    }
+  }, [account, forecastDetailModal]);
 
   return (
     <View className="flex-row items-center">
@@ -61,7 +59,7 @@ export const ForecastAccountElement: React.FC<Props> = ({ account }) => {
                 monthName={monthName}
                 amount={amount}
                 onPress={() => {
-                  useForecastStore.setState({
+                  useForecastsStore.setState({
                     forecastDetailModal: {
                       account,
                     },

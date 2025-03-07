@@ -1,200 +1,131 @@
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { router } from "expo-router";
-import { openDatabaseSync } from "expo-sqlite";
-import React, { useCallback, useEffect } from "react";
-import { Controller } from "react-hook-form";
-import { ScrollView, Text, View } from "react-native";
+import { router } from 'expo-router'
+import React, { useCallback, useEffect } from 'react'
+import { Controller } from 'react-hook-form'
+import { ScrollView, Text, View } from 'react-native'
 
-import {
-  TransactionFormTypeEnum,
-  TransactionStatusEnum,
-  TransactionTypeEnum,
-} from "@/common/enums/transactions.enum";
-import {
-  TransactionFormValues,
-  useTransactionForm,
-} from "@/common/hooks/use-transaction-form";
+import { TransactionFormTypeEnum, TransactionTypeEnum } from '@/common/enums/transactions.enum'
+import { TransactionFormValues, useTransactionForm } from '@/common/hooks/use-transaction-form'
 
-import * as schema from "@/database/schema";
+import { usePrioritiesStore } from '@/stores/priorities.store'
+import { useTransactionsStore } from '@/stores/transactions.store'
 
-import { usePrioritiesStore } from "@/stores/priorities.store";
-import { useTransactionsStore } from "@/stores/transactions.store";
+import { inputStyles } from '@/common/styles/input.styles'
 
-import { inputStyles } from "@/common/styles/input.styles";
-
-import { useForecast } from "@/common/hooks/use-forecast.hook";
-import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
-import { AccountSelector } from "@/components/organisms/transaction/account-selector.organism";
-import { ActionButtons } from "@/components/organisms/transaction/action-buttons.organism";
-import { ForecastComparison } from "@/components/organisms/transaction/forecast-comparison.organism";
-import { FormHeader } from "@/components/organisms/transaction/form-header.organism";
-import { MovementTypeSelector } from "@/components/organisms/transaction/movement-type-selector.organism";
-import { PrioritySelector } from "@/components/organisms/transaction/priority-selector.organism";
-
-const expoDb = openDatabaseSync("1010records");
-const db = drizzle(expoDb);
+import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
+import { CurrencyMaskedInput } from '@/components/atoms/currency-masked-input.atom'
+import { AccountSelector } from '@/components/organisms/transaction/account-selector.organism'
+import { ActionButtons } from '@/components/organisms/transaction/action-buttons.organism'
+import { ForecastComparison } from '@/components/organisms/transaction/forecast-comparison.organism'
+import { FormHeader } from '@/components/organisms/transaction/form-header.organism'
+import { MovementTypeSelector } from '@/components/organisms/transaction/movement-type-selector.organism'
+import { PrioritySelector } from '@/components/organisms/transaction/priority-selector.organism'
+import { Transaction } from '@/database/schema'
 
 export default function NewTransactionView() {
-  const { mode, editTransaction, newTransaction } = useTransactionsStore();
-  const { priorities } = usePrioritiesStore();
-  const { upsertForecastDetail } = useForecast();
+	const { mode, editTransaction, newTransaction } = useTransactionsStore()
+	const { priorities } = usePrioritiesStore()
+	const { createTransaction } = useTransactions()
 
-  const {
-    control,
-    setValue,
-    reset,
-    handleSubmit,
-    isIncome,
-    category,
-    amount,
-    getForecastDetail,
-    getForecastInfo,
-    getExecutedForecastByPriorityAndCategory,
-  } = useTransactionForm();
+	const {
+		control,
+		setValue,
+		reset,
+		handleSubmit,
+		isIncome,
+		category,
+		amount,
+		getForecastInfo,
+	} = useTransactionForm()
 
-  const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE;
+	const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE
 
-  useEffect(() => {
-    if (category) {
-      getForecastDetail();
-      getExecutedForecastByPriorityAndCategory();
-    }
-  }, [category, getForecastDetail, getExecutedForecastByPriorityAndCategory]);
+	const setTransactionValues = useCallback(() => {
+		if (!editTransaction) return
 
-  const setTransactionValues = useCallback(() => {
-    if (!editTransaction) return;
+		useTransactionsStore.setState({
+			mode: TransactionFormTypeEnum.COMPLETE,
+		})
 
-    useTransactionsStore.setState({
-      mode: TransactionFormTypeEnum.COMPLETE,
-    });
+		setValue('amount', editTransaction.amount)
+		setValue('type', editTransaction.type as TransactionTypeEnum)
 
-    setValue("amount", editTransaction.amount);
-    setValue("type", editTransaction.type as TransactionTypeEnum);
+		if (editTransaction.accountId) {
+			setValue('account', editTransaction.accountId)
+		}
 
-    if (editTransaction.accountId) {
-      setValue("account", editTransaction.accountId);
-    }
+		if (editTransaction.categoryId) {
+			setValue('category', editTransaction.categoryId)
+		}
 
-    if (editTransaction.categoryId) {
-      setValue("category", editTransaction.categoryId);
-    }
+		if (editTransaction.priorityId) {
+			const selectedPriority = priorities.find((priority) => priority.id === editTransaction.priorityId)
 
-    if (editTransaction.priorityId) {
-      const selectedPriority = priorities.find(
-        (priority) => priority.id === editTransaction.priorityId,
-      );
+			if (selectedPriority) {
+				useTransactionsStore.setState({
+					newTransaction: {
+						...newTransaction,
+						selectedPriority,
+					},
+				})
+			}
+		}
+	}, [editTransaction, priorities, newTransaction, setValue])
 
-      if (selectedPriority) {
-        useTransactionsStore.setState({
-          newTransaction: {
-            ...newTransaction,
-            selectedPriority,
-          },
-        });
-      }
-    }
-  }, [editTransaction, priorities, newTransaction, setValue]);
+	useEffect(() => {
+		if (editTransaction) {
+			setTransactionValues()
+		}
+	}, [editTransaction, setTransactionValues])
 
-  useEffect(() => {
-    if (editTransaction) {
-      setTransactionValues();
-    }
-  }, [editTransaction, setTransactionValues]);
+	const onSubmit = async (data: TransactionFormValues) => {
+		await createTransaction({
+			amount: data.amount,
+			type: data.type,
+			accountId: data.account,
+			categoryId: data.category,
+			priorityId: data.priority,
+		} as Transaction)
 
-  const onSubmit = async (data: TransactionFormValues) => {
-    if (!isCompleteMode) {
-      await db.insert(schema.transaction).values({
-        amount: data.amount,
-        type: data.type,
-        status: TransactionStatusEnum.PENDING,
-      });
+		router.push('/')
+	}
 
-      router.back();
-      return;
-    }
+	return (
+		<ScrollView className="p-4 bg-white">
+			<Text className="text-primary text-5xl font-bold mb-4">Registro de transacción</Text>
 
-    if (isCompleteMode && editTransaction) {
-      const dataToUpdate: Partial<schema.Transaction> = {
-        amount: data.amount,
-        type: data.type,
-        status: TransactionStatusEnum.PENDING,
-      };
+			<FormHeader />
 
-      if (data.account) {
-        dataToUpdate.accountId = data.account;
-      }
+			<View>
+				<MovementTypeSelector isIncome={isIncome} setValue={setValue} />
 
-      if (newTransaction.selectedPriority?.id) {
-        dataToUpdate.priorityId = newTransaction.selectedPriority.id;
-      }
+				<Controller
+					control={control}
+					rules={{ required: true }}
+					render={({ field: { onChange, onBlur, value } }) => (
+						<CurrencyMaskedInput
+							label="Monto"
+							onChangeText={onChange}
+							onBlur={onBlur}
+							value={value?.toString()}
+							placeholder="Ingrese un monto"
+							style={{
+								...inputStyles.fieldStyle,
+							}}
+						/>
+					)}
+					name="amount"
+				/>
 
-      if (data.category) {
-        dataToUpdate.categoryId = data.category;
-      }
+				{isCompleteMode && <AccountSelector control={control} />}
 
-      const isFullyComplete =
-        !!(
-          data.amount &&
-          data.category &&
-          newTransaction.selectedPriority?.id &&
-          data.account
-        ) ||
-        (data.amount && data.account);
+				{isCompleteMode && !isIncome && <PrioritySelector control={control} />}
 
-      if (isFullyComplete) {
-        dataToUpdate.status = TransactionStatusEnum.COMPLETED;
-        await upsertForecastDetail(dataToUpdate);
-      }
+				{isCompleteMode && !isIncome && category && amount > 0 && (
+					<ForecastComparison amount={amount} {...getForecastInfo()} />
+				)}
 
-      await db
-        .update(schema.transaction)
-        .set(dataToUpdate)
-        .where(eq(schema.transaction.id, editTransaction.id as number));
-
-      router.back();
-    }
-  };
-
-  return (
-    <ScrollView className="p-4 bg-white">
-      <Text className="text-primary text-5xl font-bold mb-4">
-        Registro de transacción
-      </Text>
-
-      <FormHeader />
-
-      <View>
-        <MovementTypeSelector isIncome={isIncome} setValue={setValue} />
-
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <CurrencyMaskedInput
-              label="Monto"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value?.toString()}
-              placeholder="Ingrese un monto"
-              style={{
-                ...inputStyles.fieldStyle,
-              }}
-            />
-          )}
-          name="amount"
-        />
-
-        {isCompleteMode && <AccountSelector control={control} />}
-
-        {isCompleteMode && !isIncome && <PrioritySelector control={control} />}
-
-        {isCompleteMode && !isIncome && category && amount > 0 && (
-          <ForecastComparison amount={amount} {...getForecastInfo()} />
-        )}
-
-        <ActionButtons onSave={handleSubmit(onSubmit)} onReset={reset} />
-      </View>
-    </ScrollView>
-  );
+				<ActionButtons onSave={handleSubmit(onSubmit)} onReset={reset} />
+			</View>
+		</ScrollView>
+	)
 }

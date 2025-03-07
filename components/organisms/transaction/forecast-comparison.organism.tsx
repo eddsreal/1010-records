@@ -1,4 +1,4 @@
-import { useCurrency } from "@/common/hooks/use-currency.hook";
+import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import { ForecastDetail } from "@/database/schema";
 import React from "react";
 import { Text, View } from "react-native";

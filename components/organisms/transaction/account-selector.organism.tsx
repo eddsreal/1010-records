@@ -1,5 +1,5 @@
-import { useCurrency } from "@/common/hooks/use-currency.hook";
 import { TransactionFormValues } from "@/common/hooks/use-transaction-form";
+import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import { useAccountsStore } from "@/stores/accounts.store";
 import React from "react";
 import { Control, Controller } from "react-hook-form";

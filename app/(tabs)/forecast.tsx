@@ -1,34 +1,28 @@
-import { useForecastData } from "@/common/hooks/use-forecast-data-forecast.hook";
-import { useStoreData } from "@/common/hooks/useStoreData.hook";
-import { ForecastElement } from "@/components/organisms/forecast/forecast-element.organism";
-import { useAccountsStore } from "@/stores/accounts.store";
-import { usePrioritiesStore } from "@/stores/priorities.store";
-import React, { useEffect } from "react";
-import { View } from "react-native";
-import PagerView from "react-native-pager-view";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
+import { ForecastElement } from '@/components/organisms/forecast/forecast-element.organism'
+import { useAccountsStore } from '@/stores/accounts.store'
+import { usePrioritiesStore } from '@/stores/priorities.store'
+import React, { useEffect } from 'react'
+import { View } from 'react-native'
+import PagerView from 'react-native-pager-view'
 
 export default function ForecastWizzardView() {
-  const insets = useSafeAreaInsets();
-  const { priorities } = usePrioritiesStore();
-  const { accounts } = useAccountsStore();
-  const { getYearForecasts } = useForecastData();
-  const { getAccounts, getPriorities } = useStoreData();
+	const { getForecasts } = useForecasts()
+	const { priorities } = usePrioritiesStore()
+	const { accounts } = useAccountsStore()
 
-  useEffect(() => {
-    getYearForecasts();
-    getAccounts();
-    getPriorities();
-  }, [getYearForecasts, getAccounts, getPriorities]);
-
-  return (
-    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
-      <PagerView initialPage={0} style={{ flex: 1 }}>
-        <ForecastElement accounts={accounts} />
-        {priorities.map((priority) => (
-          <ForecastElement key={priority.id} priority={priority} />
-        ))}
-      </PagerView>
-    </View>
-  );
+	useEffect(() => {
+		getForecasts()
+	}, [])
+	
+	return (
+		<View className="flex-1 bg-white">
+			<PagerView initialPage={0} style={{ flex: 1 }}>
+				<ForecastElement accounts={accounts} />
+				{priorities.map((priority) => (
+					<ForecastElement key={priority.id} priority={priority} />
+				))}
+			</PagerView>
+		</View>
+	)
 }

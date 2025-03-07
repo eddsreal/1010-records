@@ -1,10 +1,8 @@
+import { useAccounts } from "@/common/hooks/database/use-accounts.hook";
 import { inputStyles } from "@/common/styles/input.styles";
 import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
-import * as schema from "@/database/schema";
-import { useAccountsStore } from "@/stores/accounts.store";
-import { drizzle } from "drizzle-orm/expo-sqlite";
+import { Account } from "@/database/schema";
 import { router } from "expo-router";
-import { openDatabaseSync } from "expo-sqlite";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { TextField } from "react-native-ui-lib";
@@ -14,10 +12,8 @@ interface FormValues {
   balance: string;
 }
 
-const expoDb = openDatabaseSync("1010records");
-const db = drizzle(expoDb);
-
 export default function NewAccount() {
+  const { createAccount } = useAccounts();
   const { control, handleSubmit, reset } = useForm<FormValues>({
     mode: "all",
     defaultValues: {
@@ -28,16 +24,16 @@ export default function NewAccount() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    await db.insert(schema.accounts).values({
+    await createAccount({
       name: data.name,
       description: data.description,
       balance: parseFloat(data.balance),
-    });
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isDeleted: false,
+    } as Account);
 
-    const newAccounts = await db.select().from(schema.accounts);
-    useAccountsStore.setState({ accounts: newAccounts });
-
-    router.back();
+    router.push("/accounts");
     reset();
   };
 

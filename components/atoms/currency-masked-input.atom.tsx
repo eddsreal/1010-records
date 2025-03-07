@@ -1,4 +1,4 @@
-import { useCurrency } from "@/common/hooks/use-currency.hook";
+import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import React, { useCallback } from "react";
 import { Text, ViewStyle } from "react-native";
 import { MaskedInput } from "react-native-ui-lib";

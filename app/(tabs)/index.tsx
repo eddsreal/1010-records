@@ -1,20 +1,13 @@
 import {
-  TransactionStatusEnum,
-  TransactionTypeEnum,
+    TransactionTypeEnum
 } from "@/common/enums/transactions.enum";
-import { useCurrency } from "@/common/hooks/use-currency.hook";
-import * as schema from "@/database/schema";
+import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
 import { usePrioritiesStore } from "@/stores/priorities.store";
 import { useTransactionsStore } from "@/stores/transactions.store";
-import { desc, eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/expo-sqlite";
 import { router } from "expo-router";
-import { openDatabaseSync } from "expo-sqlite";
 import { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-const expoDb = openDatabaseSync("1010records");
-const db = drizzle(expoDb);
 
 export default function DashboardView() {
   const insets = useSafeAreaInsets();
@@ -22,30 +15,9 @@ export default function DashboardView() {
     useTransactionsStore();
   const { priorities } = usePrioritiesStore();
   const { formatToCurrency } = useCurrency();
-
-  const getPendingTransactions = async () => {
-    const transactions = await db
-      .select()
-      .from(schema.transaction)
-      .where(eq(schema.transaction.status, TransactionStatusEnum.PENDING));
-
-    useTransactionsStore.setState({ pendingTransactions: transactions });
-  };
-
-  const getLatestTransactions = async () => {
-    const transactions = await db
-      .select()
-      .from(schema.transaction)
-      .where(eq(schema.transaction.status, TransactionStatusEnum.COMPLETED))
-      .orderBy(desc(schema.transaction.createdAt))
-      .limit(5);
-
-    useTransactionsStore.setState({ latestTransactions: transactions });
-  };
-
+  
   useEffect(() => {
-    getPendingTransactions();
-    getLatestTransactions();
+    useTransactionsStore.setState({ refreshTransactions: true });
   }, []);
 
   return (
