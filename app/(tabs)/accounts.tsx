@@ -14,13 +14,13 @@ export default function AccountsView() {
 
   return (
     <View className="bg-white h-full p-4">
-      <Text className="text-primary text-5xl font-bold">Cuentas</Text>
+      <Text className="text-secondary text-5xl font-bold">Cuentas</Text>
 
       <FlatList
         data={accounts}
         renderItem={({ item }) => (
           <View className="bg-gray-100 rounded-lg p-4 mb-4">
-            <Text className="text-primary text-xl font-bold">{item.name}</Text>
+            <Text className="text-secondary text-xl font-bold">{item.name}</Text>
             <Text className="text-gray-500 text-sm">{item.description}</Text>
             <Text className="text-gray-500 text-sm">
               {formatToCurrency(item.balance)}
@@ -31,7 +31,7 @@ export default function AccountsView() {
 
       <View className="flex-row justify-between items-center">
         <Pressable
-          className="bg-primary rounded-full py-4 px-8"
+          className="bg-secondary rounded-full py-4 px-8"
           onPress={() => router.push("/new-account")}
         >
           <Text className="text-white text-xl font-bold">Agregar cuenta</Text>

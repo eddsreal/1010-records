@@ -59,7 +59,7 @@ export default function TabLayout() {
 					const hideTabBar = route.name.includes('edit') || route.name.includes('new')
 					return {
 						headerShown: false,
-						tabBarActiveTintColor: colors.primary,
+						tabBarActiveTintColor: colors.secondary,
 						tabBarStyle: {
 							display: hideTabBar ? 'none' : 'flex',
 						},
@@ -110,7 +110,7 @@ export default function TabLayout() {
 			{!shouldHideElement && (
 				<View>
 					<Pressable
-						className="bg-primary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
+						className="bg-secondary rounded-full w-16 h-16 items-center justify-center absolute bottom-16 right-4"
 						onPress={() => router.push('/new-transaction')}
 					>
 						<Text className="text-white text-4xl font-bold">+</Text>

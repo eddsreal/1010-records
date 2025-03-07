@@ -39,7 +39,7 @@ export default function NewAccount() {
 
   return (
     <View className="bg-white h-full p-4">
-      <Text className="text-primary text-5xl font-bold">Crear Cuenta</Text>
+      <Text className="text-secondary text-5xl font-bold">Crear Cuenta</Text>
 
       <Controller
         control={control}
@@ -96,7 +96,7 @@ export default function NewAccount() {
 
       <View className="flex-row justify-around items-center">
         <Pressable
-          className="bg-primary rounded-full py-4 px-8"
+          className="bg-secondary rounded-full py-4 px-8"
           onPress={handleSubmit(onSubmit)}
         >
           <Text className="text-white text-xl font-bold">Agregar cuenta</Text>

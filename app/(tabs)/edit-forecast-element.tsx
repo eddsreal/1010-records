@@ -86,13 +86,13 @@ export default function EditForecastElement() {
 			<View className="mb-4 h-[10%]">
 				{forecastDetailModal.priority && (
 					<>
-						<Text className="text-3xl font-bold text-primary">{forecastDetailModal.priority?.name}</Text>
-						<Text className="text-2xl font-bold text-app-primary">{forecastDetailModal.category?.name}</Text>
+						<Text className="text-3xl font-bold text-secondary">{forecastDetailModal.priority?.name}</Text>
+						<Text className="text-2xl font-bold text-app-secondary">{forecastDetailModal.category?.name}</Text>
 					</>
 				)}
 				{forecastDetailModal.account && (
 					<>
-						<Text className="text-3xl font-bold text-primary">{forecastDetailModal.account?.name}</Text>
+						<Text className="text-3xl font-bold text-secondary">{forecastDetailModal.account?.name}</Text>
 					</>
 				)}
 			</View>
@@ -102,7 +102,7 @@ export default function EditForecastElement() {
 					return (
 						<View key={monthIndex} className="p-2 border-gray-200 items-center flex-row">
 							<View className="w-2/6 px-4 py-2">
-								<Text className="text-lg font-bold text-primary text-right ">{month.toUpperCase()}</Text>
+								<Text className="text-lg font-bold text-secondary text-right ">{month.toUpperCase()}</Text>
 							</View>
 							<View className="w-4/6 px-4 py-2">
 								<Controller

@@ -30,7 +30,7 @@ export const ActionButtons: React.FC<Props> = ({ onSubmit }) => {
 
 	return (
 		<View className="flex-row gap-4 items-center justify-center p-4">
-			<Pressable className="py-2 px-4 rounded-md bg-primary" onPress={handleSubmit(onSubmit)}>
+			<Pressable className="py-2 px-4 rounded-md bg-secondary" onPress={handleSubmit(onSubmit)}>
 				<Text className="text-white text-lg font-bold">Guardar</Text>
 			</Pressable>
 			<Pressable className="py-2 px-4 rounded-md bg-secondary" onPress={handleCancel}>

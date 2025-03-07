@@ -112,7 +112,7 @@ export default function NewTransactionView() {
 	return (
 		<ScrollView className="p-4 bg-white">
 			<FormProvider {...methods}>
-				<Text className="text-primary text-5xl font-bold mb-4">Registro de transacción</Text>
+				<Text className="text-secondary text-5xl font-bold mb-4">Registro de transacción</Text>
 
 				<FormHeader />
 

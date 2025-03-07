@@ -1,3 +1,4 @@
+import { ForecastType } from '@/common/enums/forecast.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { colors } from '@/common/styles/colors.styles'
@@ -5,6 +6,7 @@ import { EmojiPicker } from '@/components/atoms/emoji-picker.atom'
 import { Category, ForecastDetail } from '@/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { PriorityWithCategories } from '@/stores/priorities.store'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -28,15 +30,15 @@ interface FormData {
 }
 
 export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
-	const { register, getValues, handleSubmit, control, reset } = useForm<FormData>()
+	const { handleSubmit, control, reset } = useForm<FormData>()
 	const [isAddingCategory, setIsAddingCategory] = useState(false)
-	const { forecastDetailModal } = useForecastsStore()
+	const { forecastDetailModal, type } = useForecastsStore()
 	const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([])
 	const { getForecastDetail } = useForecasts()
 	const { createCategory } = usePriorities()
 
 	const getForecastDetailValues = async () => {
-		const forecastDetail = await getForecastDetail({ priorityId: priority.id })
+		const forecastDetail = await getForecastDetail({ priorityId: priority.id, forecastType: type })
 		setForecastDetail(forecastDetail as ForecastDetail[])
 	}
 
@@ -44,7 +46,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 		if (priority) {
 			getForecastDetailValues()
 		}
-	}, [priority, forecastDetailModal])
+	}, [priority, forecastDetailModal, type])
 
 	const onSubmit = async (data: FormData) => {
 		await createCategory({
@@ -63,7 +65,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 
 	return (
 		<View className="p-4">
-			<Text style={{ color: priority.color ? priority.color : colors.primary }} className="text-3xl font-bold">
+			<Text style={{ color: priority.color ? priority.color : colors.secondary }} className="text-3xl font-bold">
 				{priority.name}
 			</Text>
 
@@ -71,7 +73,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 				{priority.categories?.map((category: Category) => (
 					<View key={category.id} className="flex-row items-center mb-4">
 						<TouchableOpacity
-							className="w-4/12"
+							className="w-4/12 flex-row items-center gap-2"
 							onPress={() => {
 								useForecastsStore.setState({
 									forecastDetailModal: {
@@ -87,6 +89,9 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 							<Text className="text-gray-500 text-lg font-bold">
 								{category.icon} {category.name}
 							</Text>
+							{type === ForecastType.PROJECTED && (
+								<Ionicons name="create" color={priority.color || colors.secondary} size={25} />
+							)}
 						</TouchableOpacity>
 						<View className="w-8/12">
 							<ScrollView horizontal>
@@ -146,7 +151,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 							)}
 						/>
 						<Pressable
-							style={{ backgroundColor: priority.color ? priority.color : colors.primary }}
+							style={{ backgroundColor: priority.color ? priority.color : colors.secondary }}
 							className="p-4 rounded-md"
 							onPress={handleSubmit(onSubmit)}
 						>
@@ -157,7 +162,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 
 				{!isAddingCategory && (
 					<Pressable
-						style={{ backgroundColor: priority.color ? priority.color : colors.primary }}
+						style={{ backgroundColor: priority.color ? priority.color : colors.secondary }}
 						className="p-2 rounded-md"
 						onPress={() => {
 							setIsAddingCategory(true)

@@ -10,28 +10,28 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "balance": {
           "name": "balance",
           "type": "real",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": 0
@@ -39,7 +39,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -47,7 +47,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -55,7 +55,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -73,42 +73,42 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "icon": {
           "name": "icon",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "color": {
           "name": "color",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "category_type": {
           "name": "category_type",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'EXPENSE'"
@@ -116,14 +116,14 @@
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -131,7 +131,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -139,7 +139,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -171,70 +171,70 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "amount": {
           "name": "amount",
           "type": "real",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "month": {
           "name": "month",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "account_id": {
           "name": "account_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "transaction_type": {
           "name": "transaction_type",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "forecast_type": {
           "name": "forecast_type",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "forecast_id": {
           "name": "forecast_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "category_id": {
           "name": "category_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -242,7 +242,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -313,21 +313,21 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "year": {
           "name": "year",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -335,7 +335,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -361,42 +361,42 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "icon": {
           "name": "icon",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "color": {
           "name": "color",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_type": {
           "name": "priority_type",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'EXPENSE'"
@@ -404,7 +404,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -412,7 +412,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -420,7 +420,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -438,56 +438,56 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": true,
+          "secondaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "amount": {
           "name": "amount",
           "type": "real",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "type": {
           "name": "type",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "account_id": {
           "name": "account_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "category_id": {
           "name": "category_id",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "status": {
           "name": "status",
           "type": "text",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'PENDING'"
@@ -495,7 +495,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -503,7 +503,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "primaryKey": false,
+          "secondaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
