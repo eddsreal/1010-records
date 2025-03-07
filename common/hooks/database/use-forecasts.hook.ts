@@ -5,6 +5,7 @@ import { useForecastsStore } from '@/stores/forecasts.store'
 import { and, eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
+import { useEffect } from 'react'
 import { ForecastType } from '../../enums/forecast.enum'
 
 const expoDb = openDatabaseSync('1010records')
@@ -24,7 +25,11 @@ interface ForecastComparison {
 }
 
 export function useForecasts() {
-	const { year, yearForecast, forecastDetailModal } = useForecastsStore()
+	const { year, yearForecast, forecastDetailModal, refreshForecasts } = useForecastsStore()
+
+	useEffect(() => {
+		getForecasts()
+	}, [refreshForecasts])
 
 	const getForecasts = async () => {
 		let resultYearForecast: Forecast[] = await db.select().from(schema.forecasts).where(eq(schema.forecasts.year, year))
@@ -157,10 +162,21 @@ export function useForecasts() {
 		})
 	}
 
+	const saveForecastDetailExecuted = async (forecastDetail: ForecastDetail) => {
+		await db
+			.insert(schema.forecastDetails)
+			.values(forecastDetail)
+			.onConflictDoUpdate({
+				target: [schema.forecastDetails.id],
+				set: { amount: forecastDetail.amount },
+			})
+	}
+
 	return {
 		getForecasts,
 		getForecastDetail,
-		saveForecastDetailProjected,
 		getForecastComparison,
+		saveForecastDetailProjected,
+		saveForecastDetailExecuted,
 	}
 }

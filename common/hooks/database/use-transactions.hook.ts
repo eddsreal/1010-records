@@ -1,10 +1,13 @@
+import { ForecastType } from '@/common/enums/forecast.enum'
 import * as schema from '@/database/schema'
-import { Transaction } from '@/database/schema'
+import { ForecastDetail, Transaction } from '@/database/schema'
+import { useForecastsStore } from '@/stores/forecasts.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { desc, eq, not } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import { useEffect } from 'react'
+import { useForecasts } from './use-forecasts.hook'
 
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
@@ -17,6 +20,9 @@ interface TransactionsFilter {
 
 export function useTransactions() {
 	const { refreshTransactions, pendingTransactions, editTransaction } = useTransactionsStore()
+	const { saveForecastDetailExecuted, getForecastDetail } = useForecasts()
+	const { month } = useTransactionsStore()
+	const { yearForecast } = useForecastsStore()
 
 	useEffect(() => {
 		getTransactions({ pending: true, latest: true })
@@ -50,7 +56,29 @@ export function useTransactions() {
 			(transaction.amount && transaction.accountId)
 
 		if (isFullyComplete) {
-			transaction.status = 'COMPLETED'
+			if (transaction.priorityId && transaction.categoryId && transaction.accountId && yearForecast) {
+				const innerMonth = Number(month)
+				const forecastDetail = await getForecastDetail({
+					priorityId: transaction.priorityId,
+					categoryId: transaction.categoryId,
+					month: innerMonth,
+					forecastType: ForecastType.EXECUTED,
+				})
+				await saveForecastDetailExecuted({
+					priorityId: transaction.priorityId,
+					categoryId: transaction.categoryId,
+					accountId: transaction.accountId,
+					month: innerMonth,
+					amount: (forecastDetail?.[0]?.amount ?? 0) + Number(transaction.amount),
+					forecastType: ForecastType.EXECUTED,
+					transactionType: transaction.type,
+					forecastId: yearForecast.id,
+					id: forecastDetail?.[0]?.id,
+				} as ForecastDetail).catch((error) => {
+					console.log(error)
+				})
+				transaction.status = 'COMPLETED'
+			}
 		}
 
 		if (editTransaction) {
@@ -67,6 +95,7 @@ export function useTransactions() {
 					categoryId: transaction.categoryId,
 					priorityId: transaction.priorityId,
 					accountId: transaction.accountId,
+					type: transaction.type,
 					status: transaction.status,
 					updatedAt: new Date(),
 				},

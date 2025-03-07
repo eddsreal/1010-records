@@ -4,6 +4,7 @@ import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { colors } from '@/common/styles/colors.styles'
 import migrations from '@/drizzle/migrations'
 import { useAccountsStore } from '@/stores/accounts.store'
+import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { Ionicons } from '@expo/vector-icons'
@@ -32,6 +33,7 @@ export default function TabLayout() {
 		useAccountsStore.setState({ refreshAccounts: true })
 		usePrioritiesStore.setState({ refreshPriorities: true })
 		useTransactionsStore.setState({ refreshTransactions: true })
+		useForecastsStore.setState({ refreshForecasts: true })
 	}, [success])
 
 	if (error) {

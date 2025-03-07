@@ -13,6 +13,7 @@ type ForecastsStoreType = {
 	yearForecast: Forecast | undefined
 	forecastsDetail: ForecastDetailPopulated[]
 	forecastDetailModal: Partial<ForecastDetailPopulated> | undefined
+	refreshForecasts: boolean
 }
 
 export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
@@ -20,4 +21,5 @@ export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
 	yearForecast: undefined,
 	forecastsDetail: [],
 	forecastDetailModal: undefined,
+	refreshForecasts: false,
 }))

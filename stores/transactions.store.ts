@@ -1,5 +1,5 @@
 import { TransactionFormTypeEnum } from '@/common/enums/transactions.enum'
-import { ForecastDetail, Transaction } from '@/database/schema'
+import { Transaction } from '@/database/schema'
 import { create } from 'zustand'
 import { PriorityWithCategories } from './priorities.store'
 
@@ -9,8 +9,6 @@ type TransactionsStoreType = {
 	year: string
 	newTransaction: {
 		selectedPriority: PriorityWithCategories | null
-		executedForecast: ForecastDetail | undefined
-		reset: () => void
 	}
 	pendingTransactions: Transaction[]
 	editTransaction: Transaction | undefined
@@ -28,16 +26,6 @@ export const useTransactionsStore = create<TransactionsStoreType>()((set, get) =
 	editTransaction: undefined,
 	newTransaction: {
 		selectedPriority: null,
-		executedForecast: undefined,
-		reset: () => {
-			set({
-				mode: TransactionFormTypeEnum.FAST,
-				newTransaction: {
-					...get().newTransaction,
-					selectedPriority: null,
-				},
-			})
-		},
 	},
 	latestTransactions: [],
 	refreshTransactions: false,

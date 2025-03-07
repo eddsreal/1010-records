@@ -81,13 +81,13 @@ export default function NewTransactionView() {
 				})
 			}
 		}
-	}, [editTransaction, priorities, newTransaction, methods.setValue])
+	}, [editTransaction, priorities, newTransaction])
 
 	useEffect(() => {
 		if (editTransaction) {
 			setTransactionValues()
 		}
-	}, [editTransaction, setTransactionValues])
+	}, [editTransaction])
 
 	const onSubmit = async (data: TransactionFormValues) => {
 		await createTransaction({
@@ -95,9 +95,17 @@ export default function NewTransactionView() {
 			type: data.type,
 			accountId: data.account,
 			categoryId: data.category,
-			priorityId: data.priority,
+			priorityId: newTransaction.selectedPriority?.id,
 		} as Transaction)
 
+		methods.reset()
+		useTransactionsStore.setState({
+			mode: TransactionFormTypeEnum.FAST,
+			newTransaction: {
+				selectedPriority: null,
+			},
+			editTransaction: undefined,
+		})
 		router.push('/')
 	}
 
