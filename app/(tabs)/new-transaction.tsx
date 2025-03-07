@@ -34,7 +34,6 @@ export default function NewTransactionView() {
 		isIncome,
 		category,
 		amount,
-		getForecastInfo,
 	} = useTransactionForm()
 
 	const isCompleteMode = mode === TransactionFormTypeEnum.COMPLETE
@@ -120,8 +119,8 @@ export default function NewTransactionView() {
 
 				{isCompleteMode && !isIncome && <PrioritySelector control={control} />}
 
-				{isCompleteMode && !isIncome && category && amount > 0 && (
-					<ForecastComparison amount={amount} {...getForecastInfo()} />
+				{isCompleteMode && !isIncome && category && newTransaction.selectedPriority && amount > 0 && (
+					<ForecastComparison amount={amount} priorityId={newTransaction.selectedPriority.id} categoryId={category} />
 				)}
 
 				<ActionButtons onSave={handleSubmit(onSubmit)} onReset={reset} />

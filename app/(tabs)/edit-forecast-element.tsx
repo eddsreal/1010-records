@@ -40,7 +40,6 @@ export default function EditForecastElement() {
 			accountId: forecastDetailModal?.account?.id,
 			priorityId: forecastDetailModal?.priority?.id
 		})
-		console.log(forecastDetail)
 		setForecastDetail(forecastDetail as ForecastDetail[])
 	}
 
