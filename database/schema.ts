@@ -5,7 +5,7 @@ export const accounts = sqliteTable('accounts', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
 	description: text('description'),
-	balance: real('balance').notNull(),
+	balance: real('balance').notNull().default(0),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`(unixepoch())`),
@@ -21,6 +21,11 @@ export const priorities = sqliteTable('priorities', {
 	description: text('description'),
 	icon: text('icon'),
 	color: text('color'),
+	priorityType: text('priority_type', {
+		enum: ['INCOME', 'EXPENSE'],
+	})
+		.notNull()
+		.default('EXPENSE'),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`(unixepoch())`),
@@ -36,7 +41,11 @@ export const categories = sqliteTable('categories', {
 	description: text('description'),
 	icon: text('icon'),
 	color: text('color'),
-	accountId: integer('account_id').references(() => accounts.id),
+	categoryType: text('category_type', {
+		enum: ['INCOME', 'EXPENSE'],
+	})
+		.notNull()
+		.default('EXPENSE'),
 	priorityId: integer('priority_id').references(() => priorities.id),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()

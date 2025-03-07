@@ -100,12 +100,6 @@ export default function TabLayout() {
 					}}
 				/>
 				<Tabs.Screen
-					name="categories-wizzard"
-					options={{
-						href: null,
-					}}
-				/>
-				<Tabs.Screen
 					name="edit-forecast-element"
 					options={{
 						href: null,

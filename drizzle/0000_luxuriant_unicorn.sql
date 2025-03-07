@@ -2,7 +2,7 @@ CREATE TABLE `accounts` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`description` text,
-	`balance` real NOT NULL,
+	`balance` real DEFAULT 0 NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`is_deleted` integer DEFAULT false NOT NULL
@@ -14,12 +14,11 @@ CREATE TABLE `categories` (
 	`description` text,
 	`icon` text,
 	`color` text,
-	`account_id` integer,
+	`category_type` text DEFAULT 'EXPENSE' NOT NULL,
 	`priority_id` integer,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`is_deleted` integer DEFAULT false NOT NULL,
-	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -55,6 +54,7 @@ CREATE TABLE `priorities` (
 	`description` text,
 	`icon` text,
 	`color` text,
+	`priority_type` text DEFAULT 'EXPENSE' NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`is_deleted` integer DEFAULT false NOT NULL
