@@ -2,7 +2,7 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import * as schema from '@/database/schema'
 import { Forecast, ForecastDetail } from '@/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sum } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import { useEffect } from 'react'
@@ -67,13 +67,27 @@ export function useForecasts() {
 			return forecastDetail
 		}
 
-		if (args.priorityId && !args.month) {
+		if (args.priorityId && !args.categoryId && !args.month) {
 			const forecastDetail = await db
 				.select()
 				.from(schema.forecastDetails)
 				.where(
 					and(
 						eq(schema.forecastDetails.priorityId, args.priorityId),
+						eq(schema.forecastDetails.forecastType, args.forecastType ?? ForecastType.PROJECTED),
+					),
+				)
+
+			return forecastDetail
+		}
+
+		if (args.categoryId && args.priorityId && !args.month) {
+			const forecastDetail = await db
+				.select()
+				.from(schema.forecastDetails)
+				.where(
+					and(
+						eq(schema.forecastDetails.categoryId, args.categoryId),
 						eq(schema.forecastDetails.forecastType, args.forecastType ?? ForecastType.PROJECTED),
 					),
 				)
@@ -144,7 +158,9 @@ export function useForecasts() {
 				forecastId: yearForecast?.id,
 				transactionType:
 					forecastDetailModal?.transactionType ??
-					(forecastDetailModal?.account ? TransactionTypeEnum.INCOME : TransactionTypeEnum.EXPENSE),
+					(forecastDetailModal?.priority?.priorityType === TransactionTypeEnum.INCOME
+						? TransactionTypeEnum.INCOME
+						: TransactionTypeEnum.EXPENSE),
 				id: forecastDetail?.find((fd) => fd.month === monthNumber)?.id,
 			} as ForecastDetail
 
@@ -153,7 +169,7 @@ export function useForecasts() {
 				.values(innerForecastDetail)
 				.onConflictDoUpdate({
 					target: [schema.forecastDetails.id],
-					set: { amount: data[key] },
+					set: { amount: data[key], transactionType: innerForecastDetail.transactionType },
 				})
 		}
 
@@ -172,11 +188,74 @@ export function useForecasts() {
 			})
 	}
 
+	const getAllocationPercentageByPriority = async (args: { type: ForecastType }) => {
+		const totalIncome = await db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+			})
+			.from(schema.forecastDetails)
+			.where(
+				and(
+					eq(schema.forecastDetails.forecastId, yearForecast?.id),
+					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.INCOME),
+					eq(schema.forecastDetails.forecastType, args.type),
+				),
+			)
+
+		const amountByPriority = await db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+				id: schema.priorities.id,
+				name: schema.priorities.name,
+				color: schema.priorities.color,
+			})
+			.from(schema.forecastDetails)
+			.leftJoin(schema.priorities, eq(schema.forecastDetails.priorityId, schema.priorities.id))
+			.where(
+				and(
+					eq(schema.forecastDetails.forecastId, yearForecast?.id),
+					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.EXPENSE),
+					eq(schema.forecastDetails.forecastType, args.type),
+				),
+			)
+			.groupBy(schema.priorities.id)
+			.orderBy(schema.priorities.id)
+
+		const allocationPercentageByPriority = amountByPriority.map((priority) => {
+			if (priority.amount && totalIncome[0].amount) {
+				return {
+					id: priority.id,
+					name: priority.name,
+					color: priority.color,
+					amount: priority.amount,
+					percentage: (Number(priority.amount) / Number(totalIncome[0].amount)) * 100,
+				}
+			}
+		})
+
+		const totalPercentage = allocationPercentageByPriority.reduce((acc, curr) => acc + (curr?.percentage ?? 0), 0)
+		const totalAmount = allocationPercentageByPriority.reduce((acc, curr) => acc + (Number(curr?.amount) ?? 0), 0)
+
+		allocationPercentageByPriority.push({
+			percentage: 100 - totalPercentage,
+			color: '#9ca3af',
+			amount: (Number(totalIncome[0].amount) - Number(totalAmount)).toString(),
+			name: 'Sin asignar',
+			id: 0,
+		})
+
+		return {
+			totalIncome: totalIncome[0].amount,
+			priorities: allocationPercentageByPriority,
+		}
+	}
+
 	return {
 		getForecasts,
 		getForecastDetail,
 		getForecastComparison,
 		saveForecastDetailProjected,
 		saveForecastDetailExecuted,
+		getAllocationPercentageByPriority,
 	}
 }

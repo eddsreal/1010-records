@@ -37,8 +37,8 @@ export default function EditForecastElement() {
 
 	const getForecastDetailValues = async () => {
 		const forecastDetail = await getForecastDetail({
-			accountId: forecastDetailModal?.account?.id,
-			priorityId: forecastDetailModal?.priority?.id
+			priorityId: forecastDetailModal?.priority?.id,
+			categoryId: forecastDetailModal?.category?.id,
 		})
 		setForecastDetail(forecastDetail as ForecastDetail[])
 	}

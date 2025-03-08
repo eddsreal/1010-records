@@ -10,6 +10,7 @@ import { useTransactionsStore } from '@/stores/transactions.store'
 import { Ionicons } from '@expo/vector-icons'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
 import { router, Tabs, usePathname } from 'expo-router'
 import { openDatabaseSync } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
@@ -21,11 +22,12 @@ const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
 
 export default function TabLayout() {
+	useDrizzleStudio(expoDb)
 	const { success, error } = useMigrations(db, migrations)
 	useAccounts()
 	usePriorities()
 	useTransactions()
-	
+
 	const pathname = usePathname()
 	const shouldHideElement = pathname.includes('edit') || pathname.includes('new')
 

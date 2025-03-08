@@ -64,7 +64,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 	}
 
 	return (
-		<View className="p-4">
+		<ScrollView className="p-4">
 			<Text style={{ color: priority.color ? priority.color : colors.secondary }} className="text-3xl font-bold">
 				{priority.name}
 			</Text>
@@ -172,6 +172,6 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 					</Pressable>
 				)}
 			</View>
-		</View>
+		</ScrollView>
 	)
 }
