@@ -1,7 +1,7 @@
+import { Account } from "@/common/hooks/database/schema";
 import { useAccounts } from "@/common/hooks/database/use-accounts.hook";
 import { inputStyles } from "@/common/styles/input.styles";
 import { CurrencyMaskedInput } from "@/components/atoms/currency-masked-input.atom";
-import { Account } from "@/database/schema";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";

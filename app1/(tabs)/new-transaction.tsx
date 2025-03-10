@@ -10,6 +10,7 @@ import { useTransactionsStore } from '@/stores/transactions.store'
 
 import { inputStyles } from '@/common/styles/input.styles'
 
+import { Transaction } from '@/common/hooks/database/schema'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { CurrencyMaskedInput } from '@/components/atoms/currency-masked-input.atom'
 import { AccountSelector } from '@/components/organisms/transaction/account-selector.organism'
@@ -18,7 +19,6 @@ import { ForecastComparison } from '@/components/organisms/transaction/forecast-
 import { FormHeader } from '@/components/organisms/transaction/form-header.organism'
 import { MovementTypeSelector } from '@/components/organisms/transaction/movement-type-selector.organism'
 import { PrioritySelector } from '@/components/organisms/transaction/priority-selector.organism'
-import { Transaction } from '@/database/schema'
 
 export interface TransactionFormValues {
 	amount: number

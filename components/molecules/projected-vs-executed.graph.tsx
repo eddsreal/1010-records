@@ -39,7 +39,7 @@ interface ProjectedVsExecutedGraphData {
 export const ProjectedVsExecutedGraph = () => {
 	const { formatToCurrency } = useCurrency()
 	const skiaRef = useRef<any>(null)
-	const { transactionType } = useForecastsStore()
+	const { transactionType, relativeDates } = useForecastsStore()
 	const { getProjectedVsExecutedByCategoryAndType } = useForecasts()
 	const [data, setData] = useState<ProjectedVsExecutedGraphData[]>([])
 
@@ -47,7 +47,10 @@ export const ProjectedVsExecutedGraph = () => {
 		const fetchData = async () => {
 			const { projected, executed } = await getProjectedVsExecutedByCategoryAndType({
 				transactionType,
+				startDate: relativeDates?.startDate || '',
+				endDate: relativeDates?.endDate || '',
 			})
+
 			const xAxisData: Set<string> = new Set()
 			projected.forEach((item) => {
 				if (item.account) {
@@ -86,7 +89,7 @@ export const ProjectedVsExecutedGraph = () => {
 			)
 		}
 		fetchData()
-	}, [transactionType])
+	}, [transactionType, relativeDates])
 
 	useEffect(() => {
 		const labelOption = {

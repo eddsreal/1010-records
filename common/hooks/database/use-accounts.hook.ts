@@ -1,5 +1,5 @@
-import * as schema from '@/database/schema'
-import { Account } from '@/database/schema'
+import * as schema from '@/common/hooks/database/schema'
+import { Account } from '@/common/hooks/database/schema'
 import { useAccountsStore } from '@/stores/accounts.store'
 import { eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'

@@ -1,13 +1,13 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
-import * as schema from '@/database/schema'
-import { Forecast, ForecastDetail } from '@/database/schema'
+import * as schema from '@/common/hooks/database/schema'
+import { Forecast, ForecastDetail } from '@/common/hooks/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
-import { and, eq, sql, sum } from 'drizzle-orm'
+import { and, eq, gte, lte, sql, sum } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
+import moment from 'moment'
 import { useEffect } from 'react'
 import { ForecastType } from '../../enums/forecast.enum'
-
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
 
@@ -250,7 +250,11 @@ export function useForecasts() {
 		}
 	}
 
-	const getProjectedVsExecutedByCategoryAndType = async (args: { transactionType: TransactionTypeEnum }) => {
+	const getProjectedVsExecutedByCategoryAndType = async (args: {
+		transactionType: TransactionTypeEnum
+		startDate: string
+		endDate: string
+	}) => {
 		let projected = db
 			.select({
 				amount: sum(schema.forecastDetails.amount),
@@ -267,6 +271,10 @@ export function useForecasts() {
 				and(
 					eq(schema.forecastDetails.forecastType, ForecastType.PROJECTED),
 					eq(schema.forecastDetails.transactionType, args.transactionType),
+					gte(schema.forecastDetails.month, moment(args.startDate).month() + 1),
+					lte(schema.forecastDetails.month, moment(args.endDate).month() + 1),
+					gte(schema.forecastDetails.year, moment(args.startDate).year()),
+					lte(schema.forecastDetails.year, moment(args.endDate).year()),
 				),
 			)
 			.$dynamic()
@@ -293,6 +301,10 @@ export function useForecasts() {
 				and(
 					eq(schema.forecastDetails.forecastType, ForecastType.EXECUTED),
 					eq(schema.forecastDetails.transactionType, args.transactionType),
+					gte(schema.forecastDetails.month, moment(args.startDate).month() + 1),
+					lte(schema.forecastDetails.month, moment(args.endDate).month() + 1),
+					gte(schema.forecastDetails.year, moment(args.startDate).year()),
+					lte(schema.forecastDetails.year, moment(args.endDate).year()),
 				),
 			)
 			.$dynamic()
@@ -311,7 +323,11 @@ export function useForecasts() {
 		}
 	}
 
-	const getForecastExecutedAmountByType = async (args: { transactionType: TransactionTypeEnum }) => {
+	const getForecastExecutedAmountByType = async (args: {
+		transactionType: TransactionTypeEnum
+		startDate: string
+		endDate: string
+	}) => {
 		const forecastAmount = await db
 			.select({
 				amount: sum(schema.forecastDetails.amount),
@@ -321,6 +337,10 @@ export function useForecasts() {
 				and(
 					eq(schema.forecastDetails.forecastType, ForecastType.EXECUTED),
 					eq(schema.forecastDetails.transactionType, args.transactionType),
+					gte(schema.forecastDetails.month, moment(args.startDate).month() + 1),
+					lte(schema.forecastDetails.month, moment(args.endDate).month() + 1),
+					gte(schema.forecastDetails.year, moment(args.startDate).year()),
+					lte(schema.forecastDetails.year, moment(args.endDate).year()),
 				),
 			)
 

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e748176d-e1f2-4784-8be6-d28117ef7ef5",
+  "id": "672f5bd4-8925-4eea-b2e4-4721eeee984a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -10,28 +10,28 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "balance": {
           "name": "balance",
           "type": "real",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": 0
@@ -39,7 +39,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -47,7 +47,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -55,7 +55,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -73,42 +73,42 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "icon": {
           "name": "icon",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "color": {
           "name": "color",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "category_type": {
           "name": "category_type",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'EXPENSE'"
@@ -116,14 +116,14 @@
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -131,7 +131,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -139,7 +139,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -171,70 +171,78 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "amount": {
           "name": "amount",
           "type": "real",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "month": {
           "name": "month",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "account_id": {
           "name": "account_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(strftime('%Y', 'now'))"
         },
         "transaction_type": {
           "name": "transaction_type",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "forecast_type": {
           "name": "forecast_type",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "forecast_id": {
           "name": "forecast_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "category_id": {
           "name": "category_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -242,7 +250,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -313,21 +321,21 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "year": {
           "name": "year",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -335,7 +343,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -361,42 +369,42 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "icon": {
           "name": "icon",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "color": {
           "name": "color",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_type": {
           "name": "priority_type",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'EXPENSE'"
@@ -404,7 +412,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -412,7 +420,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -420,7 +428,7 @@
         "is_deleted": {
           "name": "is_deleted",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": false
@@ -438,56 +446,56 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "secondaryKey": true,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
         "amount": {
           "name": "amount",
           "type": "real",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "type": {
           "name": "type",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "account_id": {
           "name": "account_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "priority_id": {
           "name": "priority_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "category_id": {
           "name": "category_id",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "status": {
           "name": "status",
           "type": "text",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'PENDING'"
@@ -495,7 +503,7 @@
         "created_at": {
           "name": "created_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
@@ -503,7 +511,7 @@
         "updated_at": {
           "name": "updated_at",
           "type": "integer",
-          "secondaryKey": false,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"

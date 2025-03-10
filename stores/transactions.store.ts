@@ -1,5 +1,5 @@
 import { TransactionFormTypeEnum } from '@/common/enums/transactions.enum'
-import { Transaction } from '@/database/schema'
+import { Transaction } from '@/common/hooks/database/schema'
 import { create } from 'zustand'
 import { PriorityWithCategories } from './priorities.store'
 

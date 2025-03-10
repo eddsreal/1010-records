@@ -28,6 +28,7 @@ CREATE TABLE `forecast_details` (
 	`month` integer NOT NULL,
 	`account_id` integer,
 	`priority_id` integer,
+	`year` integer DEFAULT (strftime('%Y', 'now')) NOT NULL,
 	`transaction_type` text NOT NULL,
 	`forecast_type` text NOT NULL,
 	`forecast_id` integer NOT NULL,

@@ -1,6 +1,6 @@
 import { ForecastType } from '@/common/enums/forecast.enum'
-import * as schema from '@/database/schema'
-import { ForecastDetail, Transaction } from '@/database/schema'
+import * as schema from '@/common/hooks/database/schema'
+import { ForecastDetail, Transaction } from '@/common/hooks/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { desc, eq, not } from 'drizzle-orm'

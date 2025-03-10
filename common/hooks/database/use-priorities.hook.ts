@@ -1,5 +1,5 @@
-import * as schema from '@/database/schema'
-import { Category, Priority } from '@/database/schema'
+import * as schema from '@/common/hooks/database/schema'
+import { Category, Priority } from '@/common/hooks/database/schema'
 import { PriorityWithCategories, usePrioritiesStore } from '@/stores/priorities.store'
 import { eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'

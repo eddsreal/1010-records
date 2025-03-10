@@ -1,7 +1,7 @@
+import { ForecastDetail } from '@/common/hooks/database/schema'
 import { MonthValues, useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { inputStyles } from '@/common/styles/input.styles'
 import { CurrencyMaskedInput } from '@/components/atoms/currency-masked-input.atom'
-import { ForecastDetail } from '@/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'

@@ -1,7 +1,7 @@
 import { TransactionFormValues } from '@/app1/(tabs)/new-transaction'
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
+import { Category } from '@/common/hooks/database/schema'
 import { colors } from '@/common/styles/colors.styles'
-import { Category } from '@/database/schema'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { router } from 'expo-router'

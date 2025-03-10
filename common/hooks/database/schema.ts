@@ -73,6 +73,9 @@ export const forecastDetails = sqliteTable('forecast_details', {
 	month: integer('month').notNull(),
 	accountId: integer('account_id').references(() => accounts.id),
 	priorityId: integer('priority_id').references(() => priorities.id),
+	year: integer('year')
+		.notNull()
+		.default(sql`(strftime('%Y', 'now'))`),
 	transactionType: text('transaction_type', {
 		enum: ['INCOME', 'EXPENSE'],
 	}).notNull(),
