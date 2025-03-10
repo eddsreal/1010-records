@@ -1,4 +1,4 @@
-import { TransactionFormValues } from "@/app/(tabs)/new-transaction";
+import { TransactionFormValues } from "@/app1/(tabs)/new-transaction";
 import { TransactionTypeEnum } from "@/common/enums/transactions.enum";
 import React from "react";
 import { useFormContext } from "react-hook-form";
@@ -14,13 +14,13 @@ export const MovementTypeSelector: React.FC<Props> = ({
   const { setValue } = useFormContext<TransactionFormValues>()
   return (
     <View className="mb-4">
-      <Text className="text-primary text-lg font-bold">
+      <Text className="text-secondary text-lg font-bold">
         Tipo de transacción
       </Text>
       <View className="flex-row gap-4 items-center justify-center p-4">
         <Pressable
           className={`py-2 px-4 rounded-md ${
-            isIncome ? "bg-primary" : "bg-gray-200"
+            isIncome ? "bg-secondary" : "bg-gray-200"
           }`}
           onPress={() => setValue("type", TransactionTypeEnum.INCOME)}
         >

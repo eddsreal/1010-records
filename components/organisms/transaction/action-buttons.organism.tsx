@@ -1,4 +1,4 @@
-import { TransactionFormValues } from '@/app/(tabs)/new-transaction'
+import { TransactionFormValues } from '@/app1/(tabs)/new-transaction'
 import { TransactionFormTypeEnum } from '@/common/enums/transactions.enum'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { router } from 'expo-router'
@@ -30,10 +30,10 @@ export const ActionButtons: React.FC<Props> = ({ onSubmit }) => {
 
 	return (
 		<View className="flex-row gap-4 items-center justify-center p-4">
-			<Pressable className="py-2 px-4 rounded-md bg-secondary" onPress={handleSubmit(onSubmit)}>
+			<Pressable className="py-2 px-4 rounded-md bg-secondary-500" onPress={handleSubmit(onSubmit)}>
 				<Text className="text-white text-lg font-bold">Guardar</Text>
 			</Pressable>
-			<Pressable className="py-2 px-4 rounded-md bg-secondary" onPress={handleCancel}>
+			<Pressable className="py-2 px-4 rounded-md bg-secondary-500" onPress={handleCancel}>
 				<Text className="text-white text-lg font-bold">Cancelar</Text>
 			</Pressable>
 		</View>

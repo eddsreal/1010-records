@@ -1,6 +1,5 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
-import { PriorityAllocationGraph } from '@/components/molecules/priority-allocation-graph.molecule'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -80,7 +79,6 @@ export default function DashboardView() {
 				)
 			})}
 
-			<PriorityAllocationGraph />
 		</ScrollView>
 	)
 }

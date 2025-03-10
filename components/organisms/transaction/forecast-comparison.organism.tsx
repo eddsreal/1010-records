@@ -1,4 +1,4 @@
-import { TransactionFormValues } from '@/app/(tabs)/new-transaction'
+import { TransactionFormValues } from '@/app1/(tabs)/new-transaction'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -39,7 +39,7 @@ export const ForecastComparison: React.FC = () => {
 
 	return (
 		<View className="mb-4">
-			<Text className="text-primary text-lg font-bold">Comparación de gastos</Text>
+			<Text className="text-secondary text-lg font-bold">Comparación de gastos</Text>
 			<View className="flex-row gap-4 items-center justify-center p-4">
 				<View>
 					<Text className="text-app-gray text-lg font-bold">Proyectado</Text>

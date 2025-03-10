@@ -8,22 +8,24 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import PagerView from 'react-native-pager-view'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function ForecastWizzardView() {
+	const insets = useSafeAreaInsets()
 	const { getForecasts } = useForecasts()
 	const { priorities } = usePrioritiesStore()
 	const { year, type } = useForecastsStore()
 	const [currentPage, setCurrentPage] = useState(0)
-
+	
 	useEffect(() => {
 		getForecasts()
 	}, [])
 
 	return (
-		<View className="flex-1 bg-white">
+		<View className="flex-1 bg-white" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
 			<View className="flex-col justify-center items-center gap-2 p-2">
 				<View className="flex-row justify-center items-center gap-2">
-					<Text className="text-gray-500 text-2xl font-bold">Presupuesto:</Text>
+					<Text className="text-gray-500 text-2xl font-bol d">Presupuesto:</Text>
 					{type === ForecastType.PROJECTED && (
 						<TouchableOpacity
 							className="flex-row items-center gap-2"

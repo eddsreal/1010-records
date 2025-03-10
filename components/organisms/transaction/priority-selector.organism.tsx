@@ -1,4 +1,4 @@
-import { TransactionFormValues } from '@/app/(tabs)/new-transaction'
+import { TransactionFormValues } from '@/app1/(tabs)/new-transaction'
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { colors } from '@/common/styles/colors.styles'
 import { Category } from '@/database/schema'
@@ -18,7 +18,7 @@ export const PrioritySelector: React.FC = () => {
 
 	return (
 		<View className="mb-4">
-			<Text className="text-primary text-lg font-bold">Prioridad</Text>
+			<Text className="text-secondary text-lg font-bold">Prioridad</Text>
 
 			<View className="flex-row gap-4 items-center justify-center p-4">
 				<View
@@ -44,7 +44,7 @@ export const PrioritySelector: React.FC = () => {
 									<View className="flex-row items-center gap-2">
 										<Text
 											style={{
-												backgroundColor: priority.color ? priority.color : colors.primary,
+												backgroundColor: priority.color ? priority.color : colors.secondary,
 												opacity: isSelected ? 1 : 0.5,
 											}}
 											className="py-2 px-4 rounded-md"
@@ -67,7 +67,7 @@ export const PrioritySelector: React.FC = () => {
 				{selectedPriority && (
 					<View className="flex-col gap-4 items-center justify-start w-1/2 h-full">
 						<View>
-							<Text className="text-primary text-lg font-bold">Prioridad seleccionada</Text>
+							<Text className="text-secondary text-lg font-bold">Prioridad seleccionada</Text>
 							<Text className="text-app-gray text-lg font-bold">
 								{selectedPriority?.icon} - {selectedPriority?.name}
 							</Text>
@@ -76,7 +76,7 @@ export const PrioritySelector: React.FC = () => {
 							<View className="flex-col items-start gap-2 border border-gray-200 rounded-xl p-2">
 								<Text className="text-app-gray text-lg font-bold">No hay categorías</Text>
 								<Pressable
-									className="py-2 px-4 rounded-md bg-primary"
+									className="py-2 px-4 rounded-md bg-secondary"
 									onPress={() => router.push('/categories-wizzard')}
 								>
 									<Text className="text-white text-lg font-bold">Agregar categoría</Text>

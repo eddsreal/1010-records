@@ -2,7 +2,7 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import * as schema from '@/database/schema'
 import { Forecast, ForecastDetail } from '@/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
-import { and, eq, sum } from 'drizzle-orm'
+import { and, eq, sql, sum } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import { useEffect } from 'react'
@@ -196,7 +196,7 @@ export function useForecasts() {
 			.from(schema.forecastDetails)
 			.where(
 				and(
-					eq(schema.forecastDetails.forecastId, yearForecast?.id),
+					eq(schema.forecastDetails.forecastId, sql`${yearForecast!.id}`),
 					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.INCOME),
 					eq(schema.forecastDetails.forecastType, args.type),
 				),
@@ -213,7 +213,7 @@ export function useForecasts() {
 			.leftJoin(schema.priorities, eq(schema.forecastDetails.priorityId, schema.priorities.id))
 			.where(
 				and(
-					eq(schema.forecastDetails.forecastId, yearForecast?.id),
+					eq(schema.forecastDetails.forecastId, sql`${yearForecast!.id}`),
 					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.EXPENSE),
 					eq(schema.forecastDetails.forecastType, args.type),
 				),
@@ -250,6 +250,83 @@ export function useForecasts() {
 		}
 	}
 
+	const getProjectedVsExecutedByCategoryAndType = async (args: { transactionType: TransactionTypeEnum }) => {
+		let projected = db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+				accountId: schema.accounts.id,
+				account: schema.accounts.name,
+				categoryId: schema.categories.id,
+				category: schema.categories.name,
+				icon: schema.categories.icon,
+			})
+			.from(schema.forecastDetails)
+			.leftJoin(schema.accounts, eq(schema.forecastDetails.accountId, schema.accounts.id))
+			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
+			.where(
+				and(
+					eq(schema.forecastDetails.forecastType, ForecastType.PROJECTED),
+					eq(schema.forecastDetails.transactionType, args.transactionType),
+				),
+			)
+			.$dynamic()
+
+		let executed = db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+				accountId: schema.accounts.id,
+				account: schema.accounts.name,
+				categoryId: schema.categories.id,
+				category: schema.categories.name,
+				icon: schema.categories.icon ?? schema.priorities.icon,
+			})
+			.from(schema.forecastDetails)
+			.leftJoin(
+				schema.accounts,
+				and(
+					eq(schema.forecastDetails.accountId, schema.accounts.id),
+					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.INCOME),
+				),
+			)
+			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
+			.where(
+				and(
+					eq(schema.forecastDetails.forecastType, ForecastType.EXECUTED),
+					eq(schema.forecastDetails.transactionType, args.transactionType),
+				),
+			)
+			.$dynamic()
+
+		if (args.transactionType === TransactionTypeEnum.INCOME) {
+			projected = projected.groupBy(schema.accounts.id)
+			executed = executed.groupBy(schema.accounts.id)
+		} else {
+			projected = projected.groupBy(schema.forecastDetails.categoryId)
+			executed = executed.groupBy(schema.forecastDetails.categoryId)
+		}
+
+		return {
+			projected: await projected,
+			executed: await executed,
+		}
+	}
+
+	const getForecastExecutedAmountByType = async (args: { transactionType: TransactionTypeEnum }) => {
+		const forecastAmount = await db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+			})
+			.from(schema.forecastDetails)
+			.where(
+				and(
+					eq(schema.forecastDetails.forecastType, ForecastType.EXECUTED),
+					eq(schema.forecastDetails.transactionType, args.transactionType),
+				),
+			)
+
+		return Number(forecastAmount[0].amount || 0)
+	}
+
 	return {
 		getForecasts,
 		getForecastDetail,
@@ -257,5 +334,7 @@ export function useForecasts() {
 		saveForecastDetailProjected,
 		saveForecastDetailExecuted,
 		getAllocationPercentageByPriority,
+		getProjectedVsExecutedByCategoryAndType,
+		getForecastExecutedAmountByType,
 	}
 }

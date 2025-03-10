@@ -9,13 +9,13 @@ export const FormHeader: React.FC = () => {
 
   return (
     <View className="flex-row justify-between items-center mb-4">
-      <Text className="text-app-primary text-lg">
+      <Text className="text-app-secondary text-lg">
         {year}-{month}
       </Text>
       <View className="flex-row items-center">
         <Pressable
           className={`py-2 px-4 rounded-l-md ${
-            !isCompleteMode ? "bg-primary" : "bg-gray-200"
+            !isCompleteMode ? "bg-secondary" : "bg-gray-200"
           }`}
           onPress={() =>
             useTransactionsStore.setState({
@@ -31,7 +31,7 @@ export const FormHeader: React.FC = () => {
         </Pressable>
         <Pressable
           className={`py-2 px-4 rounded-r-md ${
-            isCompleteMode ? "bg-primary" : "bg-gray-200"
+            isCompleteMode ? "bg-secondary" : "bg-gray-200"
           }`}
           onPress={() =>
             useTransactionsStore.setState({

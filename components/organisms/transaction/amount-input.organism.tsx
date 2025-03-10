@@ -68,7 +68,7 @@ export const CurrencyMaskedInput: React.FC<Props> = ({
   return (
     <>
       {label && (
-        <Text className="text-primary text-lg font-bold mb-2">{label}</Text>
+        <Text className="text-secondary text-lg font-bold mb-2">{label}</Text>
       )}
       <MaskedInput
         migrate

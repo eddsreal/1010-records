@@ -1,4 +1,4 @@
-import { TransactionFormValues } from '@/app/(tabs)/new-transaction'
+import { TransactionFormValues } from '@/app1/(tabs)/new-transaction'
 import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
 import { useAccountsStore } from '@/stores/accounts.store'
 import React from 'react'
@@ -13,7 +13,7 @@ export const AccountSelector: React.FC = () => {
 
 	return (
 		<View className="flex-col mb-4">
-			<Text className="text-primary text-lg font-bold">Cuentas</Text>
+			<Text className="text-secondary text-lg font-bold">Cuentas</Text>
 			<View className="items-center">
 				<Controller
 					control={control}
