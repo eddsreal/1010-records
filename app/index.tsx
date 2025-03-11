@@ -2,13 +2,13 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
+import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { ProjectedVsExecutedGraph } from '@/components/molecules/projected-vs-executed.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { router } from 'expo-router'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
-import { Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Picker } from 'react-native-ui-lib'
 interface PeriodOption {
@@ -34,6 +34,7 @@ export default function Index() {
 	const typeText = isIncome ? 'Entradas' : 'Salidas'
 	const [forecastExecutedAmount, setForecastExecutedAmount] = useState(0)
 	const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption | null>(periodOptions[0])
+	const [modalVisible, setModalVisible] = useState(false)
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -113,8 +114,6 @@ export default function Index() {
 					<View className="flex-row items-center gap-1 bg-deepBlue-500 px-4 rounded-md">
 						<Picker
 							placeholder={'Selecciona un periodo'}
-							showSearch
-							searchPlaceholder={'Buscar periodo'}
 							value={selectedPeriod?.value}
 							onChange={(value) => {
 								setSelectedPeriod(periodOptions.find((period) => period.value === value) || null)
@@ -156,13 +155,23 @@ export default function Index() {
 					<Pressable
 						className={`shadow-lg ${isIncome ? 'bg-primary-500 shadow-primary-300' : 'bg-secondary-500 shadow-secondary-300'} p-2 rounded-full`}
 						onPress={() => {
-							router.push('/forecast')
+							// router.push('/forecast')
+							setModalVisible(true)
 						}}
 					>
 						<MaterialIcons name="add" size={48} color="white" />
 					</Pressable>
 				</View>
 			</View>
+
+			<Modal
+				transparent={true}
+				visible={modalVisible}
+				animationType="slide"
+				onRequestClose={() => setModalVisible(false)}
+			>
+				<NewTransaction onClose={() => setModalVisible(false)} />
+			</Modal>
 		</View>
 	)
 }

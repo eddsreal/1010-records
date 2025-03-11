@@ -70,22 +70,24 @@ export const ProjectedVsExecutedGraph = () => {
 			})
 			const labels = Array.from(xAxisData)
 			setData(
-				labels.map((label) => {
-					const projectedItem = projected.find(
-						(item: { account?: string | null; category?: string | null }) =>
-							item.account === label || item.category === label,
-					)
-					const executedItem = executed.find(
-						(item: { account?: string | null; category?: string | null }) =>
-							item.account === label || item.category === label,
-					)
-					return {
-						name: label,
-						icon: projectedItem?.icon ?? executedItem?.icon ?? '',
-						projected: Number(projectedItem?.amount) || 0,
-						executed: Number(executedItem?.amount) || 0,
-					}
-				}),
+				labels
+					.map((label) => {
+						const projectedItem = projected.find(
+							(item: { account?: string | null; category?: string | null }) =>
+								item.account === label || item.category === label,
+						)
+						const executedItem = executed.find(
+							(item: { account?: string | null; category?: string | null }) =>
+								item.account === label || item.category === label,
+						)
+						return {
+							name: label,
+							icon: projectedItem?.icon ?? executedItem?.icon ?? '',
+							projected: Number(projectedItem?.amount) || 0,
+							executed: Number(executedItem?.amount) || 0,
+						}
+					})
+					.sort((a, b) => b.executed - a.executed),
 			)
 		}
 		fetchData()
@@ -130,14 +132,14 @@ export const ProjectedVsExecutedGraph = () => {
 					name: 'Proyectado',
 					type: 'bar',
 					barGap: 0,
-					label: { ...labelOption, color: '#3F51B5' },
+					label: { ...labelOption, color: '#fff' },
 					emphasis: {
 						focus: 'series',
 					},
 					data: data.map((item) => item.projected),
 					itemStyle: {
 						borderRadius: [10, 10, 0, 0],
-						color: '#00e490',
+						color: '#232B5D',
 					},
 				},
 				{

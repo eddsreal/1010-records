@@ -1,26 +1,28 @@
-import { useMemo } from "react";
-
 export const useCurrency = () => {
-  const formatter = useMemo(() => {
-    return new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }, []);
+	const formatter = new Intl.NumberFormat('es-CO', {
+		style: 'decimal',
+		currency: 'COP',
+		maximumFractionDigits: 2,
+		minimumFractionDigits: 0,
+	})
 
-  const formatToCurrency = (value: number): string => {
-    return formatter.format(value);
-  };
+	const formatToCurrency = (value: number): string => {
+		const formattedNumber = formatter.format(value)
+		return formattedNumber === 'NaN' ? '' : formattedNumber
+	}
 
-  const parseCurrencyToNumber = (value: string): number => {
-    const cleanValue = value.replace(/[^0-9,-]/g, "").replace(",", ".");
-    return Number(cleanValue);
-  };
+	const parseCurrencyToNumber = (value: string): number => {
+		const cleanValue = value.replace(/[^0-9,-]/g, '')
+		return parseFloat(cleanValue.replace(',', '.'))
+	}
 
-  return {
-    formatToCurrency,
-    parseCurrencyToNumber,
-  };
-};
+	const isFormattedPartially = (value: string): boolean => {
+		return value.endsWith(',') || value.endsWith('.') || value === '-'
+	}
+
+	return {
+		formatToCurrency,
+		parseCurrencyToNumber,
+		isFormattedPartially,
+	}
+}

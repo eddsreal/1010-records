@@ -1,6 +1,8 @@
 import moment from 'moment'
 
 export enum RelativeDateEnum {
+	TODAY = 'today',
+	YESTERDAY = 'yesterday',
 	LAST_3_MONTHS = 'last_3_months',
 	LAST_6_MONTHS = 'last_6_months',
 	LAST_24_MONTHS = 'last_24_months',

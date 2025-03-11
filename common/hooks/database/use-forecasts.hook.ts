@@ -278,6 +278,7 @@ export function useForecasts() {
 				),
 			)
 			.$dynamic()
+			.limit(3)
 
 		let executed = db
 			.select({
@@ -308,6 +309,7 @@ export function useForecasts() {
 				),
 			)
 			.$dynamic()
+			.limit(3)
 
 		if (args.transactionType === TransactionTypeEnum.INCOME) {
 			projected = projected.groupBy(schema.accounts.id)

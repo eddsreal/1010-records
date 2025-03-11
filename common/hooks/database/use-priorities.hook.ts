@@ -1,7 +1,8 @@
+import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import * as schema from '@/common/hooks/database/schema'
 import { Category, Priority } from '@/common/hooks/database/schema'
 import { PriorityWithCategories, usePrioritiesStore } from '@/stores/priorities.store'
-import { eq } from 'drizzle-orm'
+import { and, eq, like } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import { useEffect } from 'react'
@@ -81,6 +82,28 @@ export function usePriorities() {
 		usePrioritiesStore.setState({ refreshPriorities: true })
 	}
 
+	const getCagetoriesByQueryAndType = async (query: string, type: TransactionTypeEnum) => {
+		const categories = await db
+			.select({
+				id: schema.categories.id,
+				name: schema.categories.name,
+				icon: schema.categories.icon,
+				color: schema.priorities.color,
+			})
+			.from(schema.categories)
+			.leftJoin(schema.priorities, eq(schema.categories.priorityId, schema.priorities.id))
+			.where(
+				and(
+					like(schema.categories.name, `%${query}%`),
+					eq(schema.priorities.priorityType, type),
+					eq(schema.categories.isDeleted, false),
+				),
+			)
+			.orderBy(schema.categories.name)
+
+		return categories
+	}
+
 	return {
 		priorities,
 		createPriority,
@@ -89,5 +112,6 @@ export function usePriorities() {
 		createCategory,
 		updateCategory,
 		deleteCategory,
+		getCagetoriesByQueryAndType,
 	}
 }
