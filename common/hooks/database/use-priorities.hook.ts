@@ -89,6 +89,7 @@ export function usePriorities() {
 				name: schema.categories.name,
 				icon: schema.categories.icon,
 				color: schema.priorities.color,
+				priorityId: schema.categories.priorityId,
 			})
 			.from(schema.categories)
 			.leftJoin(schema.priorities, eq(schema.categories.priorityId, schema.priorities.id))

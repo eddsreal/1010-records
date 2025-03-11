@@ -52,6 +52,7 @@ export function useForecasts() {
 		categoryId?: number
 		forecastType?: ForecastType
 		month?: number
+		year?: number
 	}) => {
 		if (args.accountId && !args.month) {
 			const forecastDetail = await db
@@ -61,6 +62,7 @@ export function useForecasts() {
 					and(
 						eq(schema.forecastDetails.accountId, args.accountId),
 						eq(schema.forecastDetails.forecastType, args.forecastType ?? ForecastType.PROJECTED),
+						eq(schema.forecastDetails.year, args.year ?? year),
 					),
 				)
 

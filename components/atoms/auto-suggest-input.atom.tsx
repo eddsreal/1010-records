@@ -6,6 +6,7 @@ export interface AutoSuggestItem {
 	name: string
 	icon: string
 	color?: string
+	priorityId?: string | number
 }
 
 interface AutoSuggestInputProps {
@@ -52,7 +53,7 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({ placeholder,
 					className="absolute top-[100%] w-full z-10"
 					renderItem={({ item }) => (
 						<TouchableOpacity
-							style={{ backgroundColor: item.color }}	
+							style={{ backgroundColor: item.color ? item.color : '#232B5D' }}
 							className="p-4 w-full"
 							onPress={() => onChange(item)}
 						>

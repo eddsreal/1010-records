@@ -1,7 +1,7 @@
 import * as schema from '@/common/hooks/database/schema'
 import { Account } from '@/common/hooks/database/schema'
 import { useAccountsStore } from '@/stores/accounts.store'
-import { eq } from 'drizzle-orm'
+import { eq, like } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import { useEffect } from 'react'
@@ -46,10 +46,22 @@ export function useAccounts() {
 		useAccountsStore.setState({ refreshAccounts: true })
 	}
 
+	const getAccountByQuery = async (query: string) => {
+		const accounts = await db
+			.select({
+				id: schema.accounts.id,
+				name: schema.accounts.name,
+			})
+			.from(schema.accounts)
+			.where(like(schema.accounts.name, `%${query}%`))
+		return accounts
+	}
+
 	return {
 		accounts,
 		createAccount,
 		updateAccount,
 		deleteAccount,
+		getAccountByQuery,
 	}
 }

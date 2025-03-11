@@ -36,6 +36,14 @@ export const useDates = () => {
 				startDate.startOf('year')
 				endDate.endOf('year')
 				break
+			case RelativeDateEnum.YESTERDAY:
+				startDate.subtract(1, 'day')
+				endDate.subtract(1, 'day')
+				break
+			case RelativeDateEnum.TODAY:
+				startDate
+				endDate
+				break
 		}
 
 		return { startDate, endDate }
