@@ -18,15 +18,19 @@ import {
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
-import { Slot } from 'expo-router'
+import { Drawer } from 'expo-router/drawer'
 import * as SplashScreen from 'expo-splash-screen'
 import { openDatabaseSync } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { Text, View } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+
+import { colors } from '@/common/styles/colors.styles'
 import '../global.css'
+
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
 SplashScreen.preventAutoHideAsync()
@@ -127,7 +131,36 @@ export default function RootLayout() {
 
 	return (
 		<SafeAreaProvider>
-			<Slot />
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<Drawer
+					screenOptions={{
+						drawerType: 'slide',
+						drawerPosition: 'right',
+						headerShown: false,
+						drawerStyle: {
+							backgroundColor: colors.deepBlue[800],
+						},
+						drawerActiveBackgroundColor: colors.deepBlue[600],
+						drawerActiveTintColor: colors.primary,
+						drawerInactiveTintColor: 'white',
+						drawerLabelStyle: {
+							fontFamily: 'Roboto_500Medium',
+							fontSize: 20,
+						},
+						drawerItemStyle: {
+							backgroundColor: colors.deepBlue[800],
+							borderRadius: 0,
+						},
+					}}
+				>
+					<Drawer.Screen name="index" options={{ title: 'Home' }} />
+					<Drawer.Screen
+						name="transactions"
+						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}
+					/>
+					<Drawer.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
+				</Drawer>
+			</GestureHandlerRootView>
 			<StatusBar style="light" />
 		</SafeAreaProvider>
 	)

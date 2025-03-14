@@ -1,7 +1,7 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import * as schema from '@/common/hooks/database/schema'
 import { Forecast, ForecastDetail } from '@/common/hooks/database/schema'
-import { useForecastsStore } from '@/stores/forecasts.store'
+import { ForecastDetailElement, MonthValues, useForecastsStore } from '@/stores/forecasts.store'
 import { and, eq, gte, lte, sql, sum } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
@@ -10,11 +10,6 @@ import { useEffect } from 'react'
 import { ForecastType } from '../../enums/forecast.enum'
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
-
-interface ForecastFilter {}
-export type MonthValues = {
-	[key: string]: number
-}
 
 interface ForecastComparison {
 	proyected: number
@@ -25,7 +20,7 @@ interface ForecastComparison {
 }
 
 export function useForecasts() {
-	const { year, yearForecast, forecastDetailModal, refreshForecasts } = useForecastsStore()
+	const { year, type, yearForecast, forecastDetailModal, refreshForecasts } = useForecastsStore()
 
 	useEffect(() => {
 		getForecasts()
@@ -351,6 +346,51 @@ export function useForecasts() {
 		return Number(forecastAmount[0].amount || 0)
 	}
 
+	const getforecastDetailByCategory = async (): Promise<void> => {
+		const forecastDetail = await db
+			.select({
+				id: schema.categories.id,
+				priorityId: schema.priorities.id,
+				category: schema.categories,
+				month: schema.forecastDetails.month,
+				amount: schema.forecastDetails.amount,
+			})
+			.from(schema.forecastDetails)
+			.where(and(eq(schema.forecastDetails.forecastType, type), eq(schema.forecastDetails.year, year)))
+			.leftJoin(schema.priorities, eq(schema.forecastDetails.priorityId, schema.priorities.id))
+			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
+			.orderBy(schema.forecastDetails.categoryId)
+
+		const groupedByCategory: Record<string, any[]> = {}
+		forecastDetail.forEach((detail) => {
+			const key = `${detail.id}`
+			if (!groupedByCategory[key]) {
+				groupedByCategory[key] = []
+			}
+			groupedByCategory[key].push(detail)
+		})
+
+		const result: ForecastDetailElement[] = Object.values(groupedByCategory).map((details) => {
+			const monthsValues: MonthValues = {}
+			details.forEach((detail) => {
+				if (detail.month !== null && detail.amount !== null) {
+					monthsValues[detail.month.toString()] = detail.amount
+				}
+			})
+
+			return {
+				id: details[0].id as number,
+				priorityId: details[0].priorityId as number,
+				category: details[0].category || undefined,
+				monthsValues,
+			}
+		})
+
+		useForecastsStore.setState({
+			forecastsDetailElement: result,
+		})
+	}
+
 	return {
 		getForecasts,
 		getForecastDetail,
@@ -360,5 +400,6 @@ export function useForecasts() {
 		getAllocationPercentageByPriority,
 		getProjectedVsExecutedByCategoryAndType,
 		getForecastExecutedAmountByType,
+		getforecastDetailByCategory,
 	}
 }

@@ -6,12 +6,14 @@ import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { ProjectedVsExecutedGraph } from '@/components/molecules/projected-vs-executed.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { MaterialIcons } from '@expo/vector-icons'
+import { DrawerActions, useNavigation } from '@react-navigation/native'
 import { router } from 'expo-router'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Picker } from 'react-native-ui-lib'
+
 interface PeriodOption {
 	label: string
 	value: RelativeDateEnum
@@ -26,6 +28,7 @@ const periodOptions: PeriodOption[] = [
 ]
 
 export default function Index() {
+	const navigation = useNavigation()
 	const { formatToCurrency } = useCurrency()
 	const { getRelativeDates } = useDates()
 	const insets = useSafeAreaInsets()
@@ -96,7 +99,7 @@ export default function Index() {
 				</View>
 
 				<View className="flex-row items-center">
-					<Pressable className="border border-black p-2 rounded-full">
+					<Pressable className="border border-black p-2 rounded-full" onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
 						<MaterialIcons name="settings" size={18} color="white" />
 					</Pressable>
 				</View>

@@ -1,6 +1,5 @@
 import { ForecastType } from '@/common/enums/forecast.enum'
-import { Category, ForecastDetail } from '@/common/hooks/database/schema'
-import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
+import { Category } from '@/common/hooks/database/schema'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { colors } from '@/common/styles/colors.styles'
 import { EmojiPicker } from '@/components/atoms/emoji-picker.atom'
@@ -8,10 +7,10 @@ import { useForecastsStore } from '@/stores/forecasts.store'
 import { PriorityWithCategories } from '@/stores/priorities.store'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { MonthCell } from './month-cell.organism'
+import { MonthCell } from '../atoms/month-cell.atom'
 
 const months = Array.from({ length: 12 }).map((_, monthIndex) => {
 	return new Date(2024, monthIndex).toLocaleString('es-CO', {
@@ -32,21 +31,8 @@ interface FormData {
 export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 	const { handleSubmit, control, reset } = useForm<FormData>()
 	const [isAddingCategory, setIsAddingCategory] = useState(false)
-	const { forecastDetailModal, type } = useForecastsStore()
-	const [forecastDetail, setForecastDetail] = useState<ForecastDetail[]>([])
-	const { getForecastDetail } = useForecasts()
+	const { forecastsDetailElement, type } = useForecastsStore()
 	const { createCategory } = usePriorities()
-
-	const getForecastDetailValues = async () => {
-		const forecastDetail = await getForecastDetail({ priorityId: priority.id, forecastType: type })
-		setForecastDetail(forecastDetail as ForecastDetail[])
-	}
-
-	useEffect(() => {
-		if (priority) {
-			getForecastDetailValues()
-		}
-	}, [priority, forecastDetailModal, type])
 
 	const onSubmit = async (data: FormData) => {
 		await createCategory({
@@ -60,7 +46,6 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 		} as Category)
 		setIsAddingCategory(false)
 		reset()
-		await getForecastDetailValues()
 	}
 
 	return (
@@ -70,47 +55,49 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 			</Text>
 
 			<View className="mt-4">
-				{priority.categories?.map((category: Category) => (
-					<View key={category.id} className="flex-row items-center mb-4">
-						<TouchableOpacity
-							className="w-4/12 flex-row items-center gap-2"
-							onPress={() => {
-								useForecastsStore.setState({
-									forecastDetailModal: {
-										priority,
-										category,
-									},
-								})
-								router.push({
-									pathname: '/edit-forecast-element',
-								})
-							}}
-						>
-							<Text className="text-gray-500 text-lg font-bold">
-								{category.icon} {category.name}
-							</Text>
-							{type === ForecastType.PROJECTED && (
-								<Ionicons name="create" color={priority.color || colors.secondary} size={25} />
-							)}
-						</TouchableOpacity>
-						<View className="w-8/12">
-							<ScrollView horizontal>
-								{months.map((month, monthIndex) => {
-									const monthData = forecastDetail?.find(
-										(fd) =>
-											fd.month === monthIndex + 1 && fd.categoryId === category.id && fd.priorityId === priority.id,
-									)
-									const amount = monthData?.amount || 0
+				{priority.categories?.map((category: Category) => {
+					const categoryData = forecastsDetailElement.find((fd) => fd.category?.id === category.id)
+					return (
+						<View key={category.id} className="flex-row items-center mb-4">
+							<TouchableOpacity
+								className="w-4/12 flex-row items-center gap-2"
+								onPress={() => {
+									useForecastsStore.setState({
+										forecastDetailModal: {
+											priority,
+											category,
+										},
+									})
+									router.push({
+										pathname: '/edit-forecast-element',
+									})
+								}}
+							>
+								<Text className="text-white text-lg font-bold">
+									{category.icon} {category.name}
+								</Text>
+								{type === ForecastType.PROJECTED && (
+									<Ionicons name="create" color={priority.color || colors.secondary} size={25} />
+								)}
+							</TouchableOpacity>
+							<View className="w-8/12">
+								<ScrollView horizontal>
+									{months.map((month, monthIndex) => {
+										const monthData = categoryData?.monthsValues[monthIndex + 1]
+										const amount = monthData || 0
 
-									return <MonthCell key={monthIndex} monthName={month} amount={amount} priorityColor={priority?.color} />
-								})}
-							</ScrollView>
+										return (
+											<MonthCell key={monthIndex} monthName={month} amount={amount} priorityColor={priority?.color} />
+										)
+									})}
+								</ScrollView>
+							</View>
 						</View>
-					</View>
-				))}
+					)
+				})}
 				{priority.categories?.length === 0 && (
 					<View className="mt-4">
-						<Text className="text-gray-500 text-lg font-bold mb-4">No hay categorías para esta prioridad</Text>
+						<Text className="text-white text-lg font-bold mb-4">No hay categorías para esta prioridad</Text>
 					</View>
 				)}
 

@@ -9,13 +9,22 @@ export type ForecastDetailPopulated = ForecastDetail & {
 	account?: Account
 	category?: Category
 }
+export type MonthValues = {
+	[key: string]: number
+}
+export type ForecastDetailElement = {
+	id: number
+	priorityId: number
+	category?: Category
+	monthsValues: MonthValues
+}
 
 type ForecastsStoreType = {
 	year: number
 	type: ForecastType
 	transactionType: TransactionTypeEnum
 	yearForecast: Forecast | undefined
-	forecastsDetail: ForecastDetailPopulated[]
+	forecastsDetailElement: ForecastDetailElement[]
 	forecastDetailModal: Partial<ForecastDetailPopulated> | undefined
 	refreshForecasts: boolean
 	relativeDates: { startDate: string; endDate: string } | undefined
@@ -26,7 +35,7 @@ export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
 	type: ForecastType.PROJECTED,
 	transactionType: TransactionTypeEnum.INCOME,
 	yearForecast: undefined,
-	forecastsDetail: [],
+	forecastsDetailElement: [],
 	forecastDetailModal: undefined,
 	refreshForecasts: false,
 	relativeDates: undefined,
