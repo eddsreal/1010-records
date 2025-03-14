@@ -4,6 +4,9 @@ import { useAccounts } from '@/common/hooks/database/use-accounts.hook'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
+import { useAccountsStore } from '@/stores/accounts.store'
+import { usePrioritiesStore } from '@/stores/priorities.store'
+import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -32,6 +35,9 @@ interface NewTransactionForm {
 export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 	const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption | null>(periodOptions[0])
 	const [date, setDate] = useState<Date>(new Date())
+	const { editTransaction } = useTransactionsStore()
+	const { priorities } = usePrioritiesStore()
+	const { accounts } = useAccountsStore()
 	const [isCompleteMode, setIsCompleteMode] = useState<boolean>(false)
 	const { getCagetoriesByQueryAndType } = usePriorities()
 	const { getAccountByQuery } = useAccounts()
@@ -78,6 +84,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 			type: data.transactionType,
 			createdAt: new Date(date),
 			updatedAt: new Date(),
+			id: editTransaction?.id,
 		}
 
 		await createTransaction(transaction as Transaction)
@@ -91,6 +98,39 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 		const relativeDate = getRelativeDates(new Date().toISOString(), period?.value as RelativeDateEnum)
 		setDate(relativeDate.startDate.toDate())
 	}, [selectedPeriod])
+
+	useEffect(() => {
+		if (editTransaction) {
+			const categoryObject = priorities
+				.find((priority) => priority.id === editTransaction.priorityId)
+				?.categories.find((category) => category.id === editTransaction.categoryId)
+
+			const formattedCategory = categoryObject ? {
+				id: categoryObject.id.toString(),
+				name: categoryObject.name,
+				icon: categoryObject.icon || '',
+				color: categoryObject.color || undefined,
+				priorityId: categoryObject.priorityId ?? undefined
+			} : null;
+
+			const accountObject = accounts.find((account) => account.id === editTransaction.accountId);
+			const formattedAccount = accountObject ? {
+				id: accountObject.id.toString(),
+				name: accountObject.name,
+				icon: '',
+				color: undefined
+			} : null;
+
+			reset({
+				amount: editTransaction.amount,
+				description: editTransaction.description ?? '',
+				category: formattedCategory,
+				account: formattedAccount,
+				transactionType: editTransaction.type as TransactionTypeEnum,
+			})
+			setIsCompleteMode(true)
+		}
+	}, [editTransaction, priorities, accounts])
 
 	const renderHeader = () => {
 		return (
@@ -202,22 +242,22 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 								)}
 							/>
 						</View>
-						<View className="flex-row w-full mt-4">
-							<Controller
-								control={control}
-								name="description"
-								render={({ field }) => (
-									<TextInput
-										className="p-4 w-full bg-deepBlue-600 rounded-lg text-white text-2xl font-robotoBlack placeholder:text-deepBlue-700"
-										placeholder="Descripción"
-										value={field.value}
-										onChangeText={field.onChange}
-									/>
-								)}
-							/>
-						</View>
 					</>
 				)}
+				<View className="flex-row w-full mt-4">
+					<Controller
+						control={control}
+						name="description"
+						render={({ field }) => (
+							<TextInput
+								className="p-4 w-full bg-deepBlue-600 rounded-lg text-white text-2xl font-robotoBlack placeholder:text-deepBlue-700"
+								placeholder="Descripción"
+								value={field.value}
+								onChangeText={field.onChange}
+							/>
+						)}
+					/>
+				</View>
 			</>
 		)
 	}

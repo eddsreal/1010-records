@@ -21,7 +21,6 @@ interface TransactionsFilter {
 export function useTransactions() {
 	const { refreshTransactions, pendingTransactions, editTransaction } = useTransactionsStore()
 	const { saveForecastDetailExecuted, getForecastDetail } = useForecasts()
-	const { month } = useTransactionsStore()
 	const { yearForecast } = useForecastsStore()
 
 	useEffect(() => {
@@ -34,6 +33,7 @@ export function useTransactions() {
 				.select()
 				.from(schema.transactions)
 				.where(filter?.pending ? eq(schema.transactions.status, 'PENDING') : undefined)
+				.orderBy(desc(schema.transactions.createdAt))
 
 			useTransactionsStore.setState({ pendingTransactions: transactions, refreshTransactions: false })
 		}
@@ -42,9 +42,9 @@ export function useTransactions() {
 			const transactions = await db
 				.select()
 				.from(schema.transactions)
-				.orderBy(desc(schema.transactions.createdAt))
 				.where(filter?.pending ? not(eq(schema.transactions.status, 'PENDING')) : undefined)
 				.limit(filter?.latestLimit ?? 5)
+				.orderBy(desc(schema.transactions.createdAt))
 
 			useTransactionsStore.setState({ latestTransactions: transactions, refreshTransactions: false })
 		}
@@ -82,7 +82,6 @@ export function useTransactions() {
 				console.log(error)
 			})
 			transaction.status = 'COMPLETED'
-			console.log('completed')
 		}
 
 		if (editTransaction) {
@@ -124,5 +123,6 @@ export function useTransactions() {
 		createTransaction,
 		updateTransaction,
 		deleteTransaction,
+		getTransactions,
 	}
 }
