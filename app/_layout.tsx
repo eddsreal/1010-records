@@ -159,6 +159,7 @@ export default function RootLayout() {
 						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}
 					/>
 					<Drawer.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
+					<Drawer.Screen name="upsert/forecast" options={{ title: 'Presupuestos', drawerItemStyle: { display: 'none' } }} />
 				</Drawer>
 			</GestureHandlerRootView>
 			<StatusBar style="light" />

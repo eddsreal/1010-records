@@ -5,38 +5,40 @@ import { create } from 'zustand'
 import { PriorityWithCategories } from './priorities.store'
 
 export type ForecastDetailPopulated = ForecastDetail & {
-	priority?: PriorityWithCategories
 	account?: Account
 	category?: Category
+	priority?: PriorityWithCategories
 }
 export type MonthValues = {
 	[key: string]: number
 }
 export type ForecastDetailElement = {
-	id: number
-	priorityId: number
 	category?: Category
-	monthsValues: MonthValues
+	id: number
+	forecastDetailId?: number
+	monthsValues?: MonthValues
+	priorityId: number
+	transactionType: TransactionTypeEnum
 }
 
 type ForecastsStoreType = {
-	year: number
-	type: ForecastType
-	transactionType: TransactionTypeEnum
-	yearForecast: Forecast | undefined
+	editForecastDetail: ForecastDetailElement | undefined
 	forecastsDetailElement: ForecastDetailElement[]
-	forecastDetailModal: Partial<ForecastDetailPopulated> | undefined
 	refreshForecasts: boolean
 	relativeDates: { startDate: string; endDate: string } | undefined
+	transactionType: TransactionTypeEnum
+	type: ForecastType
+	year: number
+	yearForecast: Forecast | undefined
 }
 
 export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
-	year: new Date().getFullYear(),
-	type: ForecastType.PROJECTED,
-	transactionType: TransactionTypeEnum.INCOME,
-	yearForecast: undefined,
+	editForecastDetail: undefined,
 	forecastsDetailElement: [],
-	forecastDetailModal: undefined,
 	refreshForecasts: false,
 	relativeDates: undefined,
+	transactionType: TransactionTypeEnum.INCOME,
+	type: ForecastType.PROJECTED,
+	year: new Date().getFullYear(),
+	yearForecast: undefined,
 }))

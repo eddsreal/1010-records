@@ -1,4 +1,5 @@
 import { ForecastType } from '@/common/enums/forecast.enum'
+import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Category } from '@/common/hooks/database/schema'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { colors } from '@/common/styles/colors.styles'
@@ -63,13 +64,17 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 								className="w-4/12 flex-row items-center gap-2"
 								onPress={() => {
 									useForecastsStore.setState({
-										forecastDetailModal: {
-											priority,
+										editForecastDetail: {
+											id: categoryData?.id || category.id,
+											forecastDetailId: categoryData?.forecastDetailId,
+											monthsValues: categoryData?.monthsValues,
+											priorityId: priority.id,
+											transactionType: category.categoryType as TransactionTypeEnum,
 											category,
 										},
 									})
 									router.push({
-										pathname: '/edit-forecast-element',
+										pathname: '/upsert/forecast',
 									})
 								}}
 							>
@@ -83,7 +88,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 							<View className="w-8/12">
 								<ScrollView horizontal>
 									{months.map((month, monthIndex) => {
-										const monthData = categoryData?.monthsValues[monthIndex + 1]
+										const monthData = categoryData?.monthsValues?.[monthIndex + 1]
 										const amount = monthData || 0
 
 										return (

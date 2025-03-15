@@ -20,10 +20,11 @@ interface ForecastComparison {
 }
 
 export function useForecasts() {
-	const { year, type, yearForecast, forecastDetailModal, refreshForecasts } = useForecastsStore()
+	const { year, type, yearForecast, editForecastDetail, refreshForecasts } = useForecastsStore()
 
 	useEffect(() => {
 		getForecasts()
+		getforecastDetailByCategory()
 	}, [refreshForecasts])
 
 	const getForecasts = async () => {
@@ -140,38 +141,48 @@ export function useForecasts() {
 		}
 	}
 
-	const saveForecastDetailProjected = async (data: MonthValues, forecastDetail: ForecastDetail[]) => {
+	const saveForecastDetailProjected = async (data: MonthValues) => {
 		for (const key of Object.keys(data)) {
-			const monthIndex = parseInt(key)
-			const monthNumber = monthIndex
-
 			const innerForecastDetail = {
-				month: monthNumber,
-				amount: data[key],
-				priorityId: forecastDetailModal?.priority?.id,
-				categoryId: forecastDetailModal?.category?.id,
-				accountId: forecastDetailModal?.account?.id,
+				month: parseInt(key),
+				amount: parseFloat(data[key].toString()),
+				priorityId: editForecastDetail?.priorityId,
+				categoryId: editForecastDetail?.category?.id,
 				forecastType: ForecastType.PROJECTED,
 				forecastId: yearForecast?.id,
-				transactionType:
-					forecastDetailModal?.transactionType ??
-					(forecastDetailModal?.priority?.priorityType === TransactionTypeEnum.INCOME
-						? TransactionTypeEnum.INCOME
-						: TransactionTypeEnum.EXPENSE),
-				id: forecastDetail?.find((fd) => fd.month === monthNumber)?.id,
+				transactionType: editForecastDetail?.transactionType,
+				updatedAt: new Date(),
+				year: year,
 			} as ForecastDetail
+
+			const forecastDetail = await db
+				.select()
+				.from(schema.forecastDetails)
+				.where(
+					and(
+						eq(schema.forecastDetails.categoryId, innerForecastDetail?.categoryId ?? 0),
+						eq(schema.forecastDetails.forecastId, innerForecastDetail?.forecastId ?? 0),
+						eq(schema.forecastDetails.priorityId, innerForecastDetail?.priorityId ?? 0),
+						eq(schema.forecastDetails.month, innerForecastDetail?.month ?? 0),
+						eq(schema.forecastDetails.year, innerForecastDetail?.year ?? 0),
+						eq(schema.forecastDetails.forecastType, ForecastType.PROJECTED),
+					),
+				)
+
+			innerForecastDetail.id = forecastDetail?.[0]?.id
 
 			await db
 				.insert(schema.forecastDetails)
 				.values(innerForecastDetail)
 				.onConflictDoUpdate({
 					target: [schema.forecastDetails.id],
-					set: { amount: data[key], transactionType: innerForecastDetail.transactionType },
+					set: { amount: innerForecastDetail.amount, updatedAt: innerForecastDetail.updatedAt },
 				})
 		}
 
 		useForecastsStore.setState({
-			forecastDetailModal: undefined,
+			editForecastDetail: undefined,
+			refreshForecasts: true,
 		})
 	}
 
@@ -350,14 +361,15 @@ export function useForecasts() {
 		const forecastDetail = await db
 			.select({
 				id: schema.categories.id,
-				priorityId: schema.priorities.id,
+				priorityId: schema.forecastDetails.id,
+				transactionType: schema.categories.categoryType,
+				forecastDetailId: schema.forecastDetails.id,
 				category: schema.categories,
 				month: schema.forecastDetails.month,
 				amount: schema.forecastDetails.amount,
 			})
 			.from(schema.forecastDetails)
 			.where(and(eq(schema.forecastDetails.forecastType, type), eq(schema.forecastDetails.year, year)))
-			.leftJoin(schema.priorities, eq(schema.forecastDetails.priorityId, schema.priorities.id))
 			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
 			.orderBy(schema.forecastDetails.categoryId)
 
@@ -381,6 +393,8 @@ export function useForecasts() {
 			return {
 				id: details[0].id as number,
 				priorityId: details[0].priorityId as number,
+				transactionType: details[0].transactionType as TransactionTypeEnum,
+				forecastDetailId: details[0].forecastDetailId as number,
 				category: details[0].category || undefined,
 				monthsValues,
 			}
@@ -388,6 +402,7 @@ export function useForecasts() {
 
 		useForecastsStore.setState({
 			forecastsDetailElement: result,
+			refreshForecasts: false,
 		})
 	}
 
