@@ -108,14 +108,14 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 
 				{isAddingCategory && (
 					<View className="mt-4 flex-col gap-4">
-						<Text className="text-gray-500 text-lg font-bold mb-4">Agregar categoría</Text>
+						<Text className="text-primary-500 text-lg font-bold mb-4">Agregar categoría</Text>
 						<Controller
 							control={control}
 							name="name"
 							render={({ field }) => (
 								<TextInput
 									placeholder="Nombre de la categoría"
-									className="border-b border-gray-300 rounded-md p-4 text-lg"
+									className="p-4 w-full bg-deepBlue-600 rounded-lg text-white text-2xl font-robotoBlack placeholder:text-deepBlue-700"
 									onChangeText={field.onChange}
 									onBlur={field.onBlur}
 									value={field.value}
@@ -128,7 +128,7 @@ export const ForecastPriorityElement: React.FC<Props> = ({ priority }) => {
 							render={({ field }) => (
 								<TextInput
 									placeholder="Descripción de la categoría"
-									className="border-b border-gray-300 rounded-md p-4 text-lg"
+									className="p-4 w-full bg-deepBlue-600 rounded-lg text-white text-2xl font-robotoBlack placeholder:text-deepBlue-700"
 									onChangeText={field.onChange}
 									onBlur={field.onBlur}
 									value={field.value}

@@ -40,8 +40,10 @@ export const EmojiPicker = ({
 
 	return (
 		<View>
-			<TouchableOpacity onPress={() => setModalVisible(true)} className="border-b border-gray-300 rounded-md p-4">
-				<Text className="text-lg">{value || placeholder}</Text>
+			<TouchableOpacity onPress={() => setModalVisible(true)} className="p-4 w-full bg-deepBlue-600 rounded-lg  ">
+				<Text className={`text-2xl font-robotoBlack ${value ? 'text-white' : 'text-deepBlue-700'}`}>
+					{value || placeholder}
+				</Text>
 			</TouchableOpacity>
 
 			<Modal
