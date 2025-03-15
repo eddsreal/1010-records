@@ -1,7 +1,7 @@
 import { ForecastType } from '@/common/enums/forecast.enum'
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
-import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import React, { useEffect, useState } from 'react'
@@ -11,7 +11,7 @@ export const PriorityAllocationGraph = () => {
 	const { priorities } = usePrioritiesStore()
 	const { type } = useForecastsStore()
 	const { getAllocationPercentageByPriority } = useForecasts()
-	const { formatToCurrency } = useCurrency()
+	const { formatToCurrency } = useNumbers()
 	const [pieData, setPieData] = useState<pieDataItem[]>([])
 	const [totalIncome, setTotalIncome] = useState<number>(0)
 

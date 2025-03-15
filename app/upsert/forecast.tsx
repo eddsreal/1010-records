@@ -1,5 +1,5 @@
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
-import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { colors } from '@/common/styles/colors.styles'
 import { CurrencyInput } from '@/components/atoms/currency-input.atom'
 import { MonthValues, useForecastsStore } from '@/stores/forecasts.store'
@@ -38,7 +38,7 @@ const months = Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
 
 export default function UpsertForecastView() {
 	const insets = useSafeAreaInsets()
-	const { formatToCurrency } = useCurrency()
+	const { formatToCurrency } = useNumbers()
 	const { control, reset, watch, setValue, handleSubmit	 } = useForm<FormData>()
 	const { editForecastDetail, year } = useForecastsStore()
 	const { saveForecastDetailProjected } = useForecasts()

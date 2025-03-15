@@ -1,7 +1,7 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Transaction } from '@/common/hooks/database/schema'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
-import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -21,7 +21,7 @@ const TransactionListItem = ({
 	handleEditTransaction: (transaction: Transaction) => void
 	isPending: boolean
 }) => {
-	const { formatToCurrency } = useCurrency()
+	const { formatToCurrency } = useNumbers()
 	const { priorities } = usePrioritiesStore()
 	const priority = priorities.find((priority) => priority.id === transaction.priorityId)
 	const borderColor = priority?.color && !isPending ? priority.color : '#232B5D'

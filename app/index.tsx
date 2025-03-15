@@ -1,7 +1,8 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
-import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
+import { PickerAtom } from '@/components/atoms/picker-atom'
 import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { ProjectedVsExecutedGraph } from '@/components/molecules/projected-vs-executed.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
@@ -12,7 +13,6 @@ import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Picker } from 'react-native-ui-lib'
 
 interface PeriodOption {
 	label: string
@@ -29,7 +29,7 @@ const periodOptions: PeriodOption[] = [
 
 export default function Index() {
 	const navigation = useNavigation()
-	const { formatToCurrency } = useCurrency()
+	const { formatToCurrency } = useNumbers()
 	const { getRelativeDates } = useDates()
 	const insets = useSafeAreaInsets()
 	const { transactionType, relativeDates } = useForecastsStore()
@@ -40,17 +40,21 @@ export default function Index() {
 	const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption | null>(periodOptions[0])
 	const [modalVisible, setModalVisible] = useState(false)
 
+	const fetchData = async () => {
+		const forecastExecutedAmount = await getForecastExecutedAmountByType({
+			transactionType,
+			startDate: relativeDates?.startDate || '',
+			endDate: relativeDates?.endDate || '',
+		})
+		setForecastExecutedAmount(forecastExecutedAmount)
+	}
 	useEffect(() => {
-		const fetchData = async () => {
-			const forecastExecutedAmount = await getForecastExecutedAmountByType({
-				transactionType,
-				startDate: relativeDates?.startDate || '',
-				endDate: relativeDates?.endDate || '',
-			})
-			setForecastExecutedAmount(forecastExecutedAmount)
-		}
 		fetchData()
 	}, [transactionType, relativeDates])
+
+	useEffect(() => {
+		fetchData()
+	}, [])
 
 	useEffect(() => {
 		if (selectedPeriod) {
@@ -99,7 +103,10 @@ export default function Index() {
 				</View>
 
 				<View className="flex-row items-center">
-					<Pressable className="border border-black p-2 rounded-full" onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+					<Pressable
+						className="border border-black p-2 rounded-full"
+						onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+					>
 						<MaterialIcons name="settings" size={18} color="white" />
 					</Pressable>
 				</View>
@@ -116,36 +123,14 @@ export default function Index() {
 				</View>
 				<View className="flex-row justify-center gap-2">
 					<View className="flex-row items-center gap-1 bg-deepBlue-500 px-4 rounded-md">
-						<Picker
-							placeholder={'Selecciona un periodo'}
-							value={selectedPeriod?.value}
+						<PickerAtom
+							label="Periodo"
+							options={periodOptions}
+							value={selectedPeriod ? selectedPeriod.value : ''}
 							onChange={(value) => {
 								setSelectedPeriod(periodOptions.find((period) => period.value === value) || null)
 							}}
-							renderInput={(value: string | undefined) => {
-								return (
-									<View className="flex-row items-center gap-2">
-										<Text className="text-white font-robotoRegular text-lg ">
-											{value ? periodOptions.find((period) => period.value === value)?.label : 'Periodo'}
-										</Text>
-										<MaterialIcons
-											name="chevron-right"
-											size={24}
-											color="white"
-											style={{ transform: [{ rotate: '90deg' }] }}
-										/>
-									</View>
-								)
-							}}
-							searchStyle={{
-								color: 'black',
-								placeholderTextColor: 'gray',
-							}}
-						>
-							{periodOptions.map((period: PeriodOption) => (
-								<Picker.Item key={period.value} label={period.label} value={period.value} />
-							))}
-						</Picker>
+						/>
 					</View>
 				</View>
 			</View>
@@ -159,7 +144,6 @@ export default function Index() {
 					<Pressable
 						className={`shadow-lg ${isIncome ? 'bg-primary-500 shadow-primary-300' : 'bg-secondary-500 shadow-secondary-300'} p-2 rounded-full`}
 						onPress={() => {
-							// router.push('/forecast')
 							setModalVisible(true)
 						}}
 					>

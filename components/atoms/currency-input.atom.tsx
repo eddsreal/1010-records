@@ -1,4 +1,4 @@
-import { useCurrency } from '@/common/hooks/utilities/use-currency.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import useValue from '@/common/hooks/utilities/use-value.hook'
 import React, { useCallback } from 'react'
 import { NativeSyntheticEvent, TextInput, TextInputChangeEventData } from 'react-native'
@@ -18,7 +18,7 @@ export const CurrencyInput = ({
 	value,
 	...restProps
 }: Props) => {
-	const { parseCurrencyToNumber, formatToCurrency, isFormattedPartially } = useCurrency()
+	const { parseCurrencyToNumber, formatToCurrency, isFormattedPartially } = useNumbers()
 	const isValid = useCallback(
 		(newValue: number) => {
 			if ((minValue !== undefined && newValue < minValue) || (maxValue !== undefined && newValue > maxValue)) {

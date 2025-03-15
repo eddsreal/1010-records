@@ -25,7 +25,9 @@ export const PickerAtom = ({ label, options, value, onChange }: Props) => {
 	return (
 		<View className="flex-col items-center gap-2 bg-deepBlue-500 px-4 rounded-md relative">
 			<TouchableOpacity className="flex-row items-center gap-2" onPress={() => setIsOpen(!isOpen)}>
-				<Text className="text-white font-robotoRegular text-lg ">{value ? options.find((option) => option.value === value)?.label : label}</Text>
+				<Text className="text-white font-robotoRegular text-lg ">
+					{value ? options.find((option) => option.value === value)?.label : label}
+				</Text>
 				<MaterialIcons
 					name="chevron-right"
 					size={24}
@@ -34,12 +36,10 @@ export const PickerAtom = ({ label, options, value, onChange }: Props) => {
 				/>
 			</TouchableOpacity>
 			{isOpen && (
-				<View
-					className="flex-col items-center gap-2 absolute top-full left-0 right-0 bg-deepBlue-500 px-4 rounded-md w-auto z-10"
-				>
+				<View className="flex-col gap-4 absolute top-[110%] -left-[25%] py-2 right-0 bg-deepBlue-500 px-2 rounded-md w-[200%] z-10 border-2 border-deepBlue-800">
 					{options.map((option) => (
-						<TouchableOpacity key={option.value} onPress={() => handleChange(option.value)}>
-							<Text className="text-white font-robotoRegular text-lg ">{option.label}</Text>
+						<TouchableOpacity className="w-full flex-row justify-center gap-2" key={option.value} onPress={() => handleChange(option.value)}>
+							<Text className="text-white font-robotoRegular text-lg">{option.label}</Text>
 						</TouchableOpacity>
 					))}
 				</View>

@@ -1,4 +1,4 @@
-import { useCurrency } from "@/common/hooks/utilities/use-currency.hook";
+import { useNumbers } from "@/common/hooks/utilities/use-numbers.hook";
 import { useAccountsStore } from "@/stores/accounts.store";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AccountsView() {
   const { accounts } = useAccountsStore();
-  const { formatToCurrency } = useCurrency();
+  const { formatToCurrency } = useNumbers();
   const insets = useSafeAreaInsets()
 
   useEffect(() => {

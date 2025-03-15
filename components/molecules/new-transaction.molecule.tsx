@@ -11,9 +11,9 @@ import { MaterialIcons } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { Picker } from 'react-native-ui-lib'
 import { AutoSuggestInput, AutoSuggestItem } from '../atoms/auto-suggest-input.atom'
 import { CurrencyInput } from '../atoms/currency-input.atom'
+import { PickerAtom } from '../atoms/picker-atom'
 interface PeriodOption {
 	label: string
 	value: RelativeDateEnum
@@ -149,29 +149,12 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 	const renderHeaderActions = () => {
 		return (
 			<View className="flex-row w-full gap-2 justify-between mb-4">
-				<Picker
-					value={selectedPeriod?.value}
-					onChange={(value) => {
-						setSelectedPeriod(periodOptions.find((option) => option.value === value) || null)
-					}}
-					renderInput={() => {
-						return (
-							<View className="bg-deepBlue-600 px-4 py-1 rounded-lg flex-row items-center">
-								<Text className="text-white font-robotoRegular text-lg">{selectedPeriod?.label}</Text>
-								<MaterialIcons
-									name="chevron-right"
-									size={24}
-									color="white"
-									style={{ transform: [{ rotate: '90deg' }] }}
-								/>
-							</View>
-						)
-					}}
-				>
-					{periodOptions.map((option) => (
-						<Picker.Item key={option.value} label={option.label} value={option.value} />
-					))}
-				</Picker>
+				<PickerAtom
+					label="Periodo"
+					options={periodOptions}
+					value={selectedPeriod ? selectedPeriod.value : ''}
+					onChange={(value) => setSelectedPeriod(periodOptions.find((option) => option.value === value) || null)}
+				/>
 				<View className="flex-row items-center">
 					<TouchableOpacity
 						className={`${transactionType === TransactionTypeEnum.INCOME ? 'bg-primary-500' : 'bg-deepBlue-600'} px-4 py-2 rounded-l-lg`}

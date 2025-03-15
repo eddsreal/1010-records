@@ -153,7 +153,7 @@ export default function RootLayout() {
 						},
 					}}
 				>
-					<Drawer.Screen name="index" options={{ title: 'Home' }} />
+					<Drawer.Screen name="index" options={{ title: 'Inicio' }} />
 					<Drawer.Screen
 						name="transactions"
 						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}

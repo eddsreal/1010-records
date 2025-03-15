@@ -262,75 +262,53 @@ export function useForecasts() {
 		transactionType: TransactionTypeEnum
 		startDate: string
 		endDate: string
-	}) => {
-		let projected = db
+	}): Promise<{ projected: number; executed: number; icon: string; categoryId: number; category: string }[]> => {
+		const month = moment(args.startDate).month() + 1
+		const year = moment(args.startDate).year()
+		const test = await db
 			.select({
 				amount: sum(schema.forecastDetails.amount),
-				accountId: schema.accounts.id,
-				account: schema.accounts.name,
+				forecastType: schema.forecastDetails.forecastType,
 				categoryId: schema.categories.id,
-				category: schema.categories.name,
 				icon: schema.categories.icon,
-			})
-			.from(schema.forecastDetails)
-			.leftJoin(schema.accounts, eq(schema.forecastDetails.accountId, schema.accounts.id))
-			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
-			.where(
-				and(
-					eq(schema.forecastDetails.forecastType, ForecastType.PROJECTED),
-					eq(schema.forecastDetails.transactionType, args.transactionType),
-					gte(schema.forecastDetails.month, moment(args.startDate).month() + 1),
-					lte(schema.forecastDetails.month, moment(args.endDate).month() + 1),
-					gte(schema.forecastDetails.year, moment(args.startDate).year()),
-					lte(schema.forecastDetails.year, moment(args.endDate).year()),
-				),
-			)
-			.$dynamic()
-			.limit(3)
-
-		let executed = db
-			.select({
-				amount: sum(schema.forecastDetails.amount),
-				accountId: schema.accounts.id,
-				account: schema.accounts.name,
-				categoryId: schema.categories.id,
 				category: schema.categories.name,
-				icon: schema.categories.icon ?? schema.priorities.icon,
 			})
 			.from(schema.forecastDetails)
-			.leftJoin(
-				schema.accounts,
-				and(
-					eq(schema.forecastDetails.accountId, schema.accounts.id),
-					eq(schema.forecastDetails.transactionType, TransactionTypeEnum.INCOME),
-				),
-			)
 			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
 			.where(
 				and(
-					eq(schema.forecastDetails.forecastType, ForecastType.EXECUTED),
 					eq(schema.forecastDetails.transactionType, args.transactionType),
-					gte(schema.forecastDetails.month, moment(args.startDate).month() + 1),
-					lte(schema.forecastDetails.month, moment(args.endDate).month() + 1),
-					gte(schema.forecastDetails.year, moment(args.startDate).year()),
-					lte(schema.forecastDetails.year, moment(args.endDate).year()),
+					gte(schema.forecastDetails.month, month),
+					lte(schema.forecastDetails.month, month),
+					gte(schema.forecastDetails.year, year),
+					lte(schema.forecastDetails.year, year),
 				),
 			)
-			.$dynamic()
-			.limit(3)
+			.groupBy(schema.forecastDetails.categoryId, schema.forecastDetails.forecastType)
 
-		if (args.transactionType === TransactionTypeEnum.INCOME) {
-			projected = projected.groupBy(schema.accounts.id)
-			executed = executed.groupBy(schema.accounts.id)
-		} else {
-			projected = projected.groupBy(schema.forecastDetails.categoryId)
-			executed = executed.groupBy(schema.forecastDetails.categoryId)
-		}
+		const resultMap = new Map<
+			number,
+			{ projected: number; executed: number; icon: string; categoryId: number; category: string }
+		>()
+		test.forEach((item) => {
+			if (item.categoryId) {
+				const projected =
+					test.find((test) => test.categoryId === item.categoryId && test.forecastType === ForecastType.PROJECTED)
+						?.amount || 0
+				const executed =
+					test.find((test) => test.categoryId === item.categoryId && test.forecastType === ForecastType.EXECUTED)
+						?.amount || 0
+				resultMap.set(item.categoryId, {
+					projected: Number(projected),
+					executed: Number(executed),
+					icon: item.icon ?? '',
+					category: item.category ?? '',
+					categoryId: item.categoryId,
+				})
+			}
+		})
 
-		return {
-			projected: await projected,
-			executed: await executed,
-		}
+		return Array.from(resultMap.values())
 	}
 
 	const getForecastExecutedAmountByType = async (args: {
