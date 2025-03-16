@@ -1,11 +1,11 @@
 import { ForecastType } from '@/common/enums/forecast.enum'
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
-import { Account, Category, Forecast, ForecastDetail } from '@/common/hooks/database/schema'
+import { Category, Forecast, ForecastDetail, PaymentMethod } from '@/common/hooks/database/schema'
 import { create } from 'zustand'
 import { PriorityWithCategories } from './priorities.store'
 
 export type ForecastDetailPopulated = ForecastDetail & {
-	account?: Account
+	paymentMethod?: PaymentMethod
 	category?: Category
 	priority?: PriorityWithCategories
 }

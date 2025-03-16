@@ -43,20 +43,20 @@ export function useForecasts() {
 	}
 
 	const getForecastDetail = async (args: {
-		accountId?: number
+		paymentMethodId?: number
 		priorityId?: number
 		categoryId?: number
 		forecastType?: ForecastType
 		month?: number
 		year?: number
 	}) => {
-		if (args.accountId && !args.month) {
+		if (args.paymentMethodId && !args.month) {
 			const forecastDetail = await db
 				.select()
 				.from(schema.forecastDetails)
 				.where(
 					and(
-						eq(schema.forecastDetails.accountId, args.accountId),
+						eq(schema.forecastDetails.paymentMethodId, args.paymentMethodId),
 						eq(schema.forecastDetails.forecastType, args.forecastType ?? ForecastType.PROJECTED),
 						eq(schema.forecastDetails.year, args.year ?? year),
 					),

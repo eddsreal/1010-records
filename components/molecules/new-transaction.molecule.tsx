@@ -1,10 +1,10 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Transaction } from '@/common/hooks/database/schema'
-import { useAccounts } from '@/common/hooks/database/use-accounts.hook'
+import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.hook'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
-import { useAccountsStore } from '@/stores/accounts.store'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -28,7 +28,7 @@ interface NewTransactionForm {
 	amount: number
 	description: string
 	category: AutoSuggestItem | null
-	account: AutoSuggestItem | null
+	paymentMethod: AutoSuggestItem | null
 	transactionType: TransactionTypeEnum
 }
 
@@ -37,10 +37,10 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 	const [date, setDate] = useState<Date>(new Date())
 	const { editTransaction } = useTransactionsStore()
 	const { priorities } = usePrioritiesStore()
-	const { accounts } = useAccountsStore()
+	const { paymentMethods } = usePaymentMethodsStore()
 	const [isCompleteMode, setIsCompleteMode] = useState<boolean>(false)
 	const { getCagetoriesByQueryAndType } = usePriorities()
-	const { getAccountByQuery } = useAccounts()
+	const { getPaymentMethodByQuery } = usePaymentMethods()	
 	const { createTransaction } = useTransactions()
 	const { getRelativeDates } = useDates()
 
@@ -48,7 +48,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 		defaultValues: {
 			description: '',
 			category: null,
-			account: null,
+			paymentMethod: null,
 			transactionType: TransactionTypeEnum.EXPENSE,
 		},
 	})
@@ -66,9 +66,9 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 	}
 
 	const handleSearchAccounts = async (search: string) => {
-		const accounts = await getAccountByQuery(search)
-		return accounts.map((account) => ({
-			...account,
+		const paymentMethods = await getPaymentMethodByQuery(search)
+		return paymentMethods.map((paymentMethod) => ({
+			...paymentMethod,
 			icon: '',
 			color: undefined,
 		}))
@@ -80,7 +80,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 			description: data.description,
 			categoryId: data.category?.id ? Number(data.category.id) : null,
 			priorityId: data.category?.priorityId ? Number(data.category.priorityId) : null,
-			accountId: data.account?.id ? Number(data.account.id) : null,
+			paymentMethodId: data.paymentMethod?.id ? Number(data.paymentMethod.id) : null,
 			type: data.transactionType,
 			createdAt: new Date(date),
 			updatedAt: new Date(),
@@ -113,10 +113,10 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 				priorityId: categoryObject.priorityId ?? undefined
 			} : null;
 
-			const accountObject = accounts.find((account) => account.id === editTransaction.accountId);
-			const formattedAccount = accountObject ? {
-				id: accountObject.id.toString(),
-				name: accountObject.name,
+			const paymentMethodObject = paymentMethods.find((paymentMethod) => paymentMethod.id === editTransaction.paymentMethodId);
+			const formattedPaymentMethod = paymentMethodObject ? {
+				id: paymentMethodObject.id.toString(),
+				name: paymentMethodObject.name,
 				icon: '',
 				color: undefined
 			} : null;
@@ -125,12 +125,12 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 				amount: editTransaction.amount,
 				description: editTransaction.description ?? '',
 				category: formattedCategory,
-				account: formattedAccount,
+				paymentMethod: formattedPaymentMethod,
 				transactionType: editTransaction.type as TransactionTypeEnum,
 			})
 			setIsCompleteMode(true)
 		}
-	}, [editTransaction, priorities, accounts])
+	}, [editTransaction, priorities, paymentMethods])
 
 	const renderHeader = () => {
 		return (
@@ -214,10 +214,10 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 						<View className="flex-col w-full mt-4">
 							<Controller
 								control={control}
-								name="account"
+								name="paymentMethod"
 								render={({ field }) => (
 									<AutoSuggestInput
-										placeholder="Cuenta"
+										placeholder="Método de pago"
 										value={field.value}
 										onChange={field.onChange}
 										searchItems={handleSearchAccounts}

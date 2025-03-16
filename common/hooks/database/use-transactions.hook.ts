@@ -52,8 +52,8 @@ export function useTransactions() {
 
 	const createTransaction = async (transaction: Transaction) => {
 		const isFullyComplete =
-			!!(transaction.amount && transaction.categoryId && transaction.priorityId && transaction.accountId) ||
-			(transaction.amount && transaction.accountId)
+			!!(transaction.amount && transaction.categoryId && transaction.priorityId && transaction.paymentMethodId) ||
+			(transaction.amount && transaction.paymentMethodId)
 
 		if (isFullyComplete && yearForecast) {
 			const innerMonth = moment(transaction.createdAt).month() + 1
@@ -62,7 +62,7 @@ export function useTransactions() {
 			const forecastDetail = await getForecastDetail({
 				priorityId: transaction?.priorityId ?? undefined,
 				categoryId: transaction?.categoryId ?? undefined,
-				accountId: transaction?.accountId ?? undefined,
+				paymentMethodId: transaction?.paymentMethodId ?? undefined,
 				month: innerMonth,
 				year: innerYear,
 				forecastType: ForecastType.EXECUTED,
@@ -70,7 +70,7 @@ export function useTransactions() {
 			await saveForecastDetailExecuted({
 				priorityId: transaction?.priorityId ?? undefined,
 				categoryId: transaction?.categoryId ?? undefined,
-				accountId: transaction?.accountId ?? undefined,
+				paymentMethodId: transaction?.paymentMethodId ?? undefined,
 				month: innerMonth,
 				year: innerYear,
 				amount: (forecastDetail?.[0]?.amount ?? 0) + Number(transaction.amount),
@@ -97,7 +97,7 @@ export function useTransactions() {
 					amount: transaction.amount,
 					categoryId: transaction.categoryId,
 					priorityId: transaction.priorityId,
-					accountId: transaction.accountId,
+					paymentMethodId: transaction.paymentMethodId,
 					description: transaction.description,
 					type: transaction.type,
 					status: transaction.status,

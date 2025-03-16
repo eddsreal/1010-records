@@ -1,9 +1,8 @@
-import { useAccounts } from '@/common/hooks/database/use-accounts.hook'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import migrations from '@/drizzle/migrations'
-import { useAccountsStore } from '@/stores/accounts.store'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import {
@@ -28,9 +27,9 @@ import { Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
+import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.hook'
 import { colors } from '@/common/styles/colors.styles'
 import '../global.css'
-
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
 SplashScreen.preventAutoHideAsync()
@@ -86,7 +85,7 @@ export default function RootLayout() {
 	const { success, error } = useMigrations(db, migrations)
 	usePriorities()
 	useForecasts()
-	useAccounts()
+	usePaymentMethods()
 	const [loaded, errorFonts] = useFonts({
 		Roboto_900Black,
 		Roboto_700Bold,
@@ -105,7 +104,7 @@ export default function RootLayout() {
 	useEffect(() => {
 		usePrioritiesStore.setState({ refreshPriorities: true })
 		useForecastsStore.setState({ refreshForecasts: true })
-		useAccountsStore.setState({ refreshAccounts: true })
+		usePaymentMethodsStore.setState({ refreshPaymentMethods: true })
 		useTransactionsStore.setState({ refreshTransactions: true })
 	}, [])
 
@@ -159,7 +158,11 @@ export default function RootLayout() {
 						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}
 					/>
 					<Drawer.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
-					<Drawer.Screen name="upsert/forecast" options={{ title: 'Presupuestos', drawerItemStyle: { display: 'none' } }} />
+					<Drawer.Screen
+						name="upsert/forecast"
+						options={{ title: 'Presupuestos', drawerItemStyle: { display: 'none' } }}
+					/>
+					<Drawer.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
 				</Drawer>
 			</GestureHandlerRootView>
 			<StatusBar style="light" />

@@ -1,11 +1,14 @@
 import { sql } from 'drizzle-orm'
 import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
-export const accounts = sqliteTable('accounts', {
+export const paymentMethods = sqliteTable('payment_methods', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
 	description: text('description'),
 	balance: real('balance').notNull().default(0),
+	type: text('type', { enum: ['ACCOUNT', 'CARD', 'CASH'] })
+		.default('ACCOUNT')
+		.notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`(unixepoch())`),
@@ -71,7 +74,7 @@ export const forecastDetails = sqliteTable('forecast_details', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	amount: real('amount').notNull(),
 	month: integer('month').notNull(),
-	accountId: integer('account_id').references(() => accounts.id),
+	paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
 	priorityId: integer('priority_id').references(() => priorities.id),
 	year: integer('year')
 		.notNull()
@@ -99,7 +102,7 @@ export const transactions = sqliteTable('transactions', {
 	amount: real('amount').notNull(),
 	description: text('description'),
 	type: text('type', { enum: ['INCOME', 'EXPENSE'] }).notNull(),
-	accountId: integer('account_id').references(() => accounts.id),
+	paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
 	priorityId: integer('priority_id').references(() => priorities.id),
 	categoryId: integer('category_id').references(() => categories.id),
 	status: text('status', { enum: ['PENDING', 'COMPLETED', 'CANCELLED'] })
@@ -113,7 +116,7 @@ export const transactions = sqliteTable('transactions', {
 		.default(sql`(unixepoch())`),
 })
 
-export type Account = typeof accounts.$inferSelect
+export type PaymentMethod = typeof paymentMethods.$inferSelect
 export type Priority = typeof priorities.$inferSelect
 export type Category = typeof categories.$inferSelect
 export type ForecastDetail = typeof forecastDetails.$inferSelect
