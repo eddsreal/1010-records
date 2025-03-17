@@ -2,6 +2,7 @@ import { ForecastType } from '@/common/enums/forecast.enum'
 import * as schema from '@/common/hooks/database/schema'
 import { ForecastDetail, Transaction } from '@/common/hooks/database/schema'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { desc, eq, not } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
@@ -50,6 +51,50 @@ export function useTransactions() {
 		}
 	}
 
+	const updatePaymentMethodBalance = async (transaction: Transaction) => {
+		const paymentMethod = await db
+			.select()
+			.from(schema.paymentMethods)
+			.where(eq(schema.paymentMethods.id, transaction?.paymentMethodId ?? 0))
+		const category = await db
+			.select()
+			.from(schema.categories)
+			.where(eq(schema.categories.id, transaction?.categoryId ?? 0))
+
+		if (paymentMethod) {
+			let newBalance = 0
+			if (transaction.type === 'EXPENSE') {
+				newBalance = paymentMethod[0].balance - Number(transaction.amount)
+			} else {
+				newBalance = paymentMethod[0].balance + Number(transaction.amount)
+			}
+			await db
+				.update(schema.paymentMethods)
+				.set({
+					balance: newBalance,
+				})
+				.where(eq(schema.paymentMethods.id, transaction?.paymentMethodId ?? 0))
+		}
+
+		if (category?.[0]?.paymentMethodId) {
+			const categoryPaymentMethod = await db
+				.select()
+				.from(schema.paymentMethods)
+				.where(eq(schema.paymentMethods.id, category?.[0]?.paymentMethodId ?? 0))
+
+			const balance = categoryPaymentMethod?.[0]?.balance ?? 0
+
+			if (categoryPaymentMethod?.[0]?.type === 'CARD') {
+				const newBalance = balance + Number(transaction.amount)
+				await db
+					.update(schema.paymentMethods)
+					.set({
+						balance: newBalance,
+					})
+					.where(eq(schema.paymentMethods.id, category?.[0]?.paymentMethodId ?? 0))
+			}
+		}
+	}
 	const createTransaction = async (transaction: Transaction) => {
 		const isFullyComplete =
 			!!(transaction.amount && transaction.categoryId && transaction.priorityId && transaction.paymentMethodId) ||
@@ -67,6 +112,9 @@ export function useTransactions() {
 				year: innerYear,
 				forecastType: ForecastType.EXECUTED,
 			})
+
+			await updatePaymentMethodBalance(transaction)
+
 			await saveForecastDetailExecuted({
 				priorityId: transaction?.priorityId ?? undefined,
 				categoryId: transaction?.categoryId ?? undefined,
@@ -106,6 +154,8 @@ export function useTransactions() {
 			})
 
 		useTransactionsStore.setState({ refreshTransactions: true })
+		usePaymentMethodsStore.setState({ refreshPaymentMethods: true })
+		useForecastsStore.setState({ refreshForecasts: true })
 	}
 
 	const updateTransaction = async (transaction: Transaction) => {

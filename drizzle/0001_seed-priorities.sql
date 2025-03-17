@@ -42,4 +42,4 @@ VALUES
     '🎯',
     '#00BCD4',
     'EXPENSE'
-  );  -- Custom SQL migration file, put your code below! --
+  );

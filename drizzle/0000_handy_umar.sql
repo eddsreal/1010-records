@@ -1,13 +1,3 @@
-CREATE TABLE `accounts` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text NOT NULL,
-	`description` text,
-	`balance` real DEFAULT 0 NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`is_deleted` integer DEFAULT false NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE `categories` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -19,14 +9,16 @@ CREATE TABLE `categories` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`is_deleted` integer DEFAULT false NOT NULL,
-	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action
+	`payment_method_id` integer,
+	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `forecast_details` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`amount` real NOT NULL,
 	`month` integer NOT NULL,
-	`account_id` integer,
+	`payment_method_id` integer,
 	`priority_id` integer,
 	`year` integer DEFAULT (strftime('%Y', 'now')) NOT NULL,
 	`transaction_type` text NOT NULL,
@@ -35,7 +27,7 @@ CREATE TABLE `forecast_details` (
 	`category_id` integer,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`forecast_id`) REFERENCES `forecasts`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE no action
@@ -49,6 +41,17 @@ CREATE TABLE `forecasts` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `forecasts_year_unique` ON `forecasts` (`year`);--> statement-breakpoint
+CREATE TABLE `payment_methods` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`description` text,
+	`balance` real DEFAULT 0 NOT NULL,
+	`type` text DEFAULT 'ACCOUNT' NOT NULL,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`is_deleted` integer DEFAULT false NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `priorities` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -66,13 +69,13 @@ CREATE TABLE `transactions` (
 	`amount` real NOT NULL,
 	`description` text,
 	`type` text NOT NULL,
-	`account_id` integer,
+	`payment_method_id` integer,
 	`priority_id` integer,
 	`category_id` integer,
 	`status` text DEFAULT 'PENDING' NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE no action
 );

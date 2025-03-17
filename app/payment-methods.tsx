@@ -4,33 +4,36 @@ import { colors } from '@/common/styles/colors.styles'
 import NewPaymentMethod from '@/components/molecules/new-payment-method.molecule'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { useEffect, useState } from 'react'
+import { router } from 'expo-router'
+import { useState } from 'react'
 import { FlatList, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 export default function PaymentMethods() {
 	const insets = useSafeAreaInsets()
 	const { paymentMethods } = usePaymentMethodsStore()
 	const { formatToCurrency } = useNumbers()
 	const [modalVisible, setModalVisible] = useState(false)
 
-	useEffect(() => {
-		usePaymentMethodsStore.setState({ refreshPaymentMethods: true })
-	}, [])
-
 	return (
 		<View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} className="flex-1 bg-deepBlue-800 p-4">
-			<Text className="text-primary-500 text-5xl font-bold my-4">Métodos de pago</Text>
+			<View className="flex-row justify-between items-center">
+				<Text className="text-primary-500 text-5xl font-bold my-4">Métodos de pago</Text>
+				<TouchableOpacity onPress={() => router.push('/')}>
+					<MaterialIcons name="close" size={36} color="white" />
+				</TouchableOpacity>
+			</View>
 
 			<FlatList
 				data={paymentMethods}
 				renderItem={({ item }) => (
-					<TouchableOpacity
-						className="bg-deepBlue-600 rounded-lg p-4 mb-4 flex-row justify-between items-center"
-					>
+					<TouchableOpacity className="bg-deepBlue-600 rounded-lg p-4 mb-4 flex-row justify-between items-center">
 						<View>
 							<Text className="text-deepBlue-300 text-3xl font-bold">{item.name}</Text>
 							<Text className="text-deepBlue-900 text-lg">{item.description}</Text>
-							<Text className="text-deepBlue-900 text-lg">{formatToCurrency(item.balance)}</Text>
+							<Text className={`text-deepBlue-900 ${item.balance <= 0 ? 'text-red-500' : 'text-green-500'} text-lg`}>
+								{formatToCurrency(item.balance)}
+							</Text>
 						</View>
 						<View className="flex-row gap-2">
 							{item.type === PaymentMethodTypeEnum.ACCOUNT && (

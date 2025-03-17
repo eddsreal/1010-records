@@ -1,11 +1,17 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
+import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.hook'
+import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
+import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { PickerAtom } from '@/components/atoms/picker-atom'
 import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { ProjectedVsExecutedGraph } from '@/components/molecules/projected-vs-executed.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
+import { usePrioritiesStore } from '@/stores/priorities.store'
+import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { DrawerActions, useNavigation } from '@react-navigation/native'
 import { router } from 'expo-router'
@@ -32,7 +38,7 @@ export default function Index() {
 	const { formatToCurrency } = useNumbers()
 	const { getRelativeDates } = useDates()
 	const insets = useSafeAreaInsets()
-	const { transactionType, relativeDates } = useForecastsStore()
+	const { transactionType, relativeDates, refreshForecasts } = useForecastsStore()
 	const { getForecastExecutedAmountByType } = useForecasts()
 	const isIncome = transactionType === TransactionTypeEnum.INCOME
 	const typeText = isIncome ? 'Entradas' : 'Salidas'
@@ -50,10 +56,17 @@ export default function Index() {
 	}
 	useEffect(() => {
 		fetchData()
-	}, [transactionType, relativeDates])
+	}, [transactionType, relativeDates, refreshForecasts])
 
 	useEffect(() => {
 		fetchData()
+	}, [])
+
+	useEffect(() => {
+		usePrioritiesStore.setState({ refreshPriorities: true })
+		useForecastsStore.setState({ refreshForecasts: true })
+		usePaymentMethodsStore.setState({ refreshPaymentMethods: true })
+		useTransactionsStore.setState({ refreshTransactions: true })
 	}, [])
 
 	useEffect(() => {
@@ -62,6 +75,11 @@ export default function Index() {
 			useForecastsStore.setState({ relativeDates: { startDate: startDate.format(), endDate: endDate.format() } })
 		}
 	}, [selectedPeriod])
+
+	usePriorities()
+	useForecasts()
+	usePaymentMethods()
+	useTransactions()
 
 	return (
 		<View

@@ -1,10 +1,4 @@
-import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
-import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import migrations from '@/drizzle/migrations'
-import { useForecastsStore } from '@/stores/forecasts.store'
-import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
-import { usePrioritiesStore } from '@/stores/priorities.store'
-import { useTransactionsStore } from '@/stores/transactions.store'
 import {
 	Roboto_100Thin,
 	Roboto_300Light,
@@ -27,7 +21,6 @@ import { Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.hook'
 import { colors } from '@/common/styles/colors.styles'
 import '../global.css'
 const expoDb = openDatabaseSync('1010records')
@@ -83,9 +76,7 @@ moment.locale('es-CO', {
 export default function RootLayout() {
 	useDrizzleStudio(expoDb)
 	const { success, error } = useMigrations(db, migrations)
-	usePriorities()
-	useForecasts()
-	usePaymentMethods()
+
 	const [loaded, errorFonts] = useFonts({
 		Roboto_900Black,
 		Roboto_700Bold,
@@ -100,13 +91,6 @@ export default function RootLayout() {
 			SplashScreen.hideAsync()
 		}
 	}, [loaded, errorFonts])
-
-	useEffect(() => {
-		usePrioritiesStore.setState({ refreshPriorities: true })
-		useForecastsStore.setState({ refreshForecasts: true })
-		usePaymentMethodsStore.setState({ refreshPaymentMethods: true })
-		useTransactionsStore.setState({ refreshTransactions: true })
-	}, [])
 
 	if (!loaded && !errorFonts) {
 		return null

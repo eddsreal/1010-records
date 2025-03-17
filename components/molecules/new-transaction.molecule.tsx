@@ -65,7 +65,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 		}))
 	}
 
-	const handleSearchAccounts = async (search: string) => {
+	const handleSearchPaymentMethods = async (search: string) => {
 		const paymentMethods = await getPaymentMethodByQuery(search)
 		return paymentMethods.map((paymentMethod) => ({
 			...paymentMethod,
@@ -220,7 +220,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 										placeholder="Método de pago"
 										value={field.value}
 										onChange={field.onChange}
-										searchItems={handleSearchAccounts}
+										searchItems={handleSearchPaymentMethods}
 									/>
 								)}
 							/>

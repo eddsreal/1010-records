@@ -1,72 +1,9 @@
 {
-  "id": "e166852b-0323-42ad-8bcc-e91acacac6eb",
-  "prevId": "672f5bd4-8925-4eea-b2e4-4721eeee984a",
+  "id": "7cfb7f92-5d6d-4a0f-bb76-d11dfcfd433f",
+  "prevId": "37db33c9-4a7d-4449-9845-8890652c2812",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
-    "accounts": {
-      "name": "accounts",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "balance": {
-          "name": "balance",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "is_deleted": {
-          "name": "is_deleted",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "categories": {
       "name": "categories",
       "columns": {
@@ -143,6 +80,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "payment_method_id": {
+          "name": "payment_method_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -154,6 +98,19 @@
             "priority_id"
           ],
           "tableTo": "priorities",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "categories_payment_method_id_payment_methods_id_fk": {
+          "name": "categories_payment_method_id_payment_methods_id_fk",
+          "tableFrom": "categories",
+          "columnsFrom": [
+            "payment_method_id"
+          ],
+          "tableTo": "payment_methods",
           "columnsTo": [
             "id"
           ],
@@ -189,8 +146,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "account_id": {
-          "name": "account_id",
+        "payment_method_id": {
+          "name": "payment_method_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -258,13 +215,13 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "forecast_details_account_id_accounts_id_fk": {
-          "name": "forecast_details_account_id_accounts_id_fk",
+        "forecast_details_payment_method_id_payment_methods_id_fk": {
+          "name": "forecast_details_payment_method_id_payment_methods_id_fk",
           "tableFrom": "forecast_details",
           "columnsFrom": [
-            "account_id"
+            "payment_method_id"
           ],
-          "tableTo": "accounts",
+          "tableTo": "payment_methods",
           "columnsTo": [
             "id"
           ],
@@ -358,6 +315,77 @@
           "isUnique": true
         }
       },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "payment_methods": {
+      "name": "payment_methods",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'ACCOUNT'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -471,8 +499,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "account_id": {
-          "name": "account_id",
+        "payment_method_id": {
+          "name": "payment_method_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -519,13 +547,13 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "transactions_account_id_accounts_id_fk": {
-          "name": "transactions_account_id_accounts_id_fk",
+        "transactions_payment_method_id_payment_methods_id_fk": {
+          "name": "transactions_payment_method_id_payment_methods_id_fk",
           "tableFrom": "transactions",
           "columnsFrom": [
-            "account_id"
+            "payment_method_id"
           ],
-          "tableTo": "accounts",
+          "tableTo": "payment_methods",
           "columnsTo": [
             "id"
           ],

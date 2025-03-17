@@ -57,6 +57,7 @@ export const categories = sqliteTable('categories', {
 		.notNull()
 		.default(sql`(unixepoch())`),
 	isDeleted: integer('is_deleted', { mode: 'boolean' }).notNull().default(false),
+	paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
 })
 
 export const forecasts = sqliteTable('forecasts', {

@@ -36,7 +36,7 @@ export const NewPaymentMethod: React.FC<{ onClose: () => void }> = ({ onClose })
 	const renderHeader = () => {
 		return (
 			<View className="flex-row items-center justify-between gap-2 w-full mb-8">
-				<Text className={`text-primary-500 text-4xl font-robotoBold mb-4`}>Agregar método de pago</Text>
+				<Text className={`text-primary-500 text-2xl font-robotoBold mb-4`}>Agregar método de pago</Text>
 				<TouchableOpacity onPress={onClose}>
 					<MaterialIcons name="close" size={36} color="white" />
 				</TouchableOpacity>
@@ -89,7 +89,7 @@ export const NewPaymentMethod: React.FC<{ onClose: () => void }> = ({ onClose })
 								color={type === PaymentMethodTypeEnum.ACCOUNT ? colors.deepBlue[900] : colors.deepBlue[800]}
 							/>
 							<Text
-								className={`text-white text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.ACCOUNT ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
+								className={`text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.ACCOUNT ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
 							>
 								Cuenta
 							</Text>
@@ -106,7 +106,7 @@ export const NewPaymentMethod: React.FC<{ onClose: () => void }> = ({ onClose })
 								color={type === PaymentMethodTypeEnum.CARD ? colors.deepBlue[900] : colors.deepBlue[800]}
 							/>
 							<Text
-								className={`text-white text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.CARD ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
+								className={`text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.CARD ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
 							>
 								Tarjeta
 							</Text>
@@ -123,7 +123,7 @@ export const NewPaymentMethod: React.FC<{ onClose: () => void }> = ({ onClose })
 								color={type === PaymentMethodTypeEnum.CASH ? colors.deepBlue[900] : colors.deepBlue[800]}
 							/>
 							<Text
-								className={`text-white text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.CASH ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
+								className={`text-sm font-robotoBlack ${type === PaymentMethodTypeEnum.CASH ? 'text-deepBlue-900' : 'text-deepBlue-800'}`}
 							>
 								Efectivo
 							</Text>
