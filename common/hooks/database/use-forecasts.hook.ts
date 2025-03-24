@@ -384,6 +384,20 @@ export function useForecasts() {
 		})
 	}
 
+	const getIncomeByForecastTypeAndTransactionType = async (args: { forecastType: ForecastType }) => {
+		const forecastDetail = await db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+				transactionType: schema.forecastDetails.transactionType,
+				month: schema.forecastDetails.month,
+			})
+			.from(schema.forecastDetails)
+			.where(and(eq(schema.forecastDetails.forecastType, args.forecastType)))
+			.groupBy(schema.forecastDetails.transactionType, schema.forecastDetails.month)
+
+		return forecastDetail
+	}
+
 	return {
 		getForecasts,
 		getForecastDetail,
@@ -394,5 +408,6 @@ export function useForecasts() {
 		getProjectedVsExecutedByCategoryAndType,
 		getForecastExecutedAmountByType,
 		getforecastDetailByCategory,
+		getIncomeByForecastTypeAndTransactionType,
 	}
 }

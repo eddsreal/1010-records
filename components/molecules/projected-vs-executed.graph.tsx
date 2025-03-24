@@ -6,6 +6,7 @@ import { SkiaChart, SkiaRenderer } from '@wuba/react-native-echarts'
 import { BarChart } from 'echarts/charts'
 import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
 import * as echarts from 'echarts/core'
+import { BarSeriesOption, EChartsOption } from 'echarts/types/dist/shared'
 import { useEffect, useRef, useState } from 'react'
 import { Dimensions } from 'react-native'
 
@@ -71,7 +72,7 @@ export const ProjectedVsExecutedGraph = () => {
 	}, [transactionType, relativeDates])
 
 	useEffect(() => {
-		const labelOption = {
+		const labelOption: BarSeriesOption['label'] = {
 			show: true,
 			position: 'insideBottom',
 			distance: 15,
@@ -85,7 +86,7 @@ export const ProjectedVsExecutedGraph = () => {
 				name: {},
 			},
 		}
-		const option = {
+		const option: EChartsOption = {
 			legend: {
 				data: ['Proyectado', 'Ejecutado'],
 			},

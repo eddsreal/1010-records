@@ -2,6 +2,7 @@ import { ForecastType } from '@/common/enums/forecast.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { PickerAtom } from '@/components/atoms/picker-atom'
 import { ForecastPriorityElement } from '@/components/molecules/forecast-priority-element.molecule'
+import { IncomeVsExpenseGraph } from '@/components/molecules/income-vs-expense.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -13,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Forecasts() {
 	const insets = useSafeAreaInsets()
-	const { getforecastDetailByCategory } = useForecasts()
+	const { getforecastDetailByCategory, getIncomeByForecastTypeAndTransactionType } = useForecasts()
 	const { year, type } = useForecastsStore()
 	const [currentPage, setCurrentPage] = useState(0)
 	const { priorities } = usePrioritiesStore()
@@ -58,6 +59,9 @@ export default function Forecasts() {
 						useForecastsStore.setState({ year: parseInt(value) })
 					}}
 				/>
+			</View>
+			<View className="flex-1 p-2 items-center">
+				<IncomeVsExpenseGraph />
 			</View>
 			<PagerView
 				initialPage={0}
