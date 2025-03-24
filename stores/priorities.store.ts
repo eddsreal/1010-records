@@ -8,9 +8,11 @@ export interface PriorityWithCategories extends Priority {
 type PrioritiesStoreType = {
 	priorities: PriorityWithCategories[]
 	refreshPriorities: boolean
+	editCategory: Category | null
 }
 
 export const usePrioritiesStore = create<PrioritiesStoreType>(() => ({
 	priorities: [],
 	refreshPriorities: false,
+	editCategory: null,
 }))

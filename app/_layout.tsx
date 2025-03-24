@@ -137,6 +137,8 @@ export default function RootLayout() {
 					}}
 				>
 					<Drawer.Screen name="index" options={{ title: 'Inicio' }} />
+					<Drawer.Screen name="upsert/category" options={{ title: 'Categorías' }} />
+					<Drawer.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
 					<Drawer.Screen
 						name="transactions"
 						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}
@@ -146,7 +148,6 @@ export default function RootLayout() {
 						name="upsert/forecast"
 						options={{ title: 'Presupuestos', drawerItemStyle: { display: 'none' } }}
 					/>
-					<Drawer.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
 				</Drawer>
 			</GestureHandlerRootView>
 			<StatusBar style="light" />

@@ -27,6 +27,7 @@ export function usePriorities() {
 			.from(schema.priorities)
 			.leftJoin(schema.categories, eq(schema.categories.priorityId, schema.priorities.id))
 			.where(filter?.isDeleted ? eq(schema.priorities.isDeleted, filter.isDeleted) : undefined)
+			.orderBy(schema.categories.name)
 			.then((results) => {
 				const grouped = results.reduce(
 					(acc, row) => {
@@ -68,7 +69,16 @@ export function usePriorities() {
 	}
 
 	const createCategory = async (category: Category) => {
-		await db.insert(schema.categories).values(category)
+		await db
+			.insert(schema.categories)
+			.values(category)
+			.onConflictDoUpdate({
+				target: [schema.categories.id],
+				set: {
+					name: category.name,
+					description: category.description,
+				},
+			})
 		usePrioritiesStore.setState({ refreshPriorities: true })
 	}
 
