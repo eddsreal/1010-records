@@ -2,7 +2,7 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import * as schema from '@/common/hooks/database/schema'
 import { Forecast, ForecastDetail } from '@/common/hooks/database/schema'
 import { ForecastDetailElement, MonthValues, useForecastsStore } from '@/stores/forecasts.store'
-import { and, eq, gte, lte, sql, sum } from 'drizzle-orm'
+import { and, desc, eq, gt, gte, lt, lte, or, sql, sum } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync } from 'expo-sqlite'
 import moment from 'moment'
@@ -263,9 +263,11 @@ export function useForecasts() {
 		startDate: string
 		endDate: string
 	}): Promise<{ projected: number; executed: number; icon: string; categoryId: number; category: string }[]> => {
-		const month = moment(args.startDate).month() + 1
-		const year = moment(args.startDate).year()
-		const test = await db
+		const monthStart = moment(args.startDate).month() + 1
+		const monthEnd = moment(args.endDate).month() + 1
+		const yearStart = moment(args.startDate).year()
+		const yearEnd = moment(args.endDate).year()
+		const data = await db
 			.select({
 				amount: sum(schema.forecastDetails.amount),
 				forecastType: schema.forecastDetails.forecastType,
@@ -278,27 +280,42 @@ export function useForecasts() {
 			.where(
 				and(
 					eq(schema.forecastDetails.transactionType, args.transactionType),
-					gte(schema.forecastDetails.month, month),
-					lte(schema.forecastDetails.month, month),
-					gte(schema.forecastDetails.year, year),
-					lte(schema.forecastDetails.year, year),
+					or(
+						and(
+							eq(schema.forecastDetails.year, yearStart),
+							gte(schema.forecastDetails.month, monthStart),
+							yearStart === yearEnd ? lte(schema.forecastDetails.month, monthEnd) : sql`1=1`,
+						),
+						and(
+							eq(schema.forecastDetails.year, yearEnd),
+							lte(schema.forecastDetails.month, monthEnd),
+							yearStart === yearEnd ? gte(schema.forecastDetails.month, monthStart) : sql`1=1`,
+						),
+						and(gt(schema.forecastDetails.year, yearStart), lt(schema.forecastDetails.year, yearEnd)),
+					),
 				),
 			)
 			.groupBy(schema.forecastDetails.categoryId, schema.forecastDetails.forecastType)
+			.orderBy(desc(schema.forecastDetails.amount))
+			.limit(5)
 
-		const resultMap = new Map<
-			number,
-			{ projected: number; executed: number; icon: string; categoryId: number; category: string }
-		>()
-		test.forEach((item) => {
+		const resultMap: {
+			projected: number
+			executed: number
+			icon: string
+			categoryId: number
+			category: string
+		}[] = []
+
+		data.forEach((item) => {
 			if (item.categoryId) {
 				const projected =
-					test.find((test) => test.categoryId === item.categoryId && test.forecastType === ForecastType.PROJECTED)
+					data.find((data) => data.categoryId === item.categoryId && data.forecastType === ForecastType.PROJECTED)
 						?.amount || 0
 				const executed =
-					test.find((test) => test.categoryId === item.categoryId && test.forecastType === ForecastType.EXECUTED)
+					data.find((data) => data.categoryId === item.categoryId && data.forecastType === ForecastType.EXECUTED)
 						?.amount || 0
-				resultMap.set(item.categoryId, {
+				resultMap.push({
 					projected: Number(projected),
 					executed: Number(executed),
 					icon: item.icon ?? '',
@@ -308,7 +325,7 @@ export function useForecasts() {
 			}
 		})
 
-		return Array.from(resultMap.values())
+		return resultMap
 	}
 
 	const getForecastExecutedAmountByType = async (args: {

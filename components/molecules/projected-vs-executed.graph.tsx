@@ -17,7 +17,7 @@ echarts.registerTheme('dark', {
 			show: false,
 		},
 		axisLabel: {
-			fontSize: 25,
+			fontSize: 18,
 			fontWeight: 'bold',
 			margin: 20,
 		},
@@ -52,12 +52,6 @@ export const ProjectedVsExecutedGraph = () => {
 				endDate: relativeDates?.endDate || '',
 			})
 
-			const xAxisData: Set<string> = new Set()
-			data.forEach((item) => {
-				if (item.categoryId) {
-					xAxisData.add(`${item.icon} - ${item.category}`)
-				}
-			})
 			setData(
 				data
 					.map((item) => ({
@@ -65,7 +59,6 @@ export const ProjectedVsExecutedGraph = () => {
 						projected: Number(item.projected) || 0,
 						executed: Number(item.executed) || 0,
 					}))
-					.sort((a, b) => b.executed - a.executed),
 			)
 		}
 		fetchData()
@@ -95,6 +88,7 @@ export const ProjectedVsExecutedGraph = () => {
 					type: 'category',
 					axisLabel: {
 						show: true,
+						
 						formatter: function (params: any) {
 							return `${params?.split('-')[0]}`
 						},
