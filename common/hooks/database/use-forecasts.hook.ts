@@ -392,7 +392,7 @@ export function useForecasts() {
 				month: schema.forecastDetails.month,
 			})
 			.from(schema.forecastDetails)
-			.where(and(eq(schema.forecastDetails.forecastType, args.forecastType)))
+			.where(and(eq(schema.forecastDetails.forecastType, args.forecastType), eq(schema.forecastDetails.year, year)))
 			.groupBy(schema.forecastDetails.transactionType, schema.forecastDetails.month)
 
 		return forecastDetail

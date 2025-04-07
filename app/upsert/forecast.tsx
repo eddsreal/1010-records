@@ -39,10 +39,12 @@ const months = Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
 export default function UpsertForecastView() {
 	const insets = useSafeAreaInsets()
 	const { formatToCurrency } = useNumbers()
-	const { control, reset, watch, setValue, handleSubmit	 } = useForm<FormData>()
-	const { editForecastDetail, year } = useForecastsStore()
-	const { saveForecastDetailProjected } = useForecasts()
+	const { control, reset, watch, setValue, handleSubmit } = useForm<FormData>()
+	const { editForecastDetail } = useForecastsStore()
+	const { saveForecastDetailProjected, getforecastDetailByCategory, getIncomeByForecastTypeAndTransactionType } = useForecasts()
 	const [selectedMonths, setSelectedMonths] = useState<number[]>([])
+	const [isSelectedAll, setIsSelectedAll] = useState(false)
+	const amount = watch('baseAmount')
 
 	useEffect(() => {
 		if (editForecastDetail) {
@@ -54,24 +56,31 @@ export default function UpsertForecastView() {
 		}
 	}, [editForecastDetail])
 
+	useEffect(() => {
+		selectedMonths.forEach((month) => {
+			setValue(month.toString() as keyof FormData, amount || 0)
+		})
+	}, [amount, isSelectedAll])
+
 	const handleCheckedMonths = (monthNumber: number) => {
-		const amount = watch('baseAmount')
 		if (selectedMonths.includes(monthNumber)) {
 			setSelectedMonths(selectedMonths.filter((month) => month !== monthNumber))
 		} else {
 			setSelectedMonths([...selectedMonths, monthNumber])
-			setValue(monthNumber.toString() as keyof FormData, amount)
+			setValue(monthNumber.toString() as keyof FormData, amount || 0)
 		}
 	}
 
 	const onSubmit = async (data: FormData) => {
-		const { baseAmount, ...monthValues } = data;
+		const { baseAmount, ...monthValues } = data
 		await saveForecastDetailProjected(monthValues as MonthValues).catch((error) => {
 			console.log(error)
-		});
+		})
+
+		await getforecastDetailByCategory()
 
 		reset()
-		router.push('/forecasts')
+		router.dismiss(1)
 	}
 
 	return (
@@ -94,7 +103,8 @@ export default function UpsertForecastView() {
 
 				<View className="flex-col justify-between items-center gap-2 p-2">
 					<Text className="text-white text-2xl font-bold">
-						{Object.keys(editForecastDetail?.monthsValues || {}).length > 0 ? 'Editar' : 'Crear'} presupuesto
+						{Object.keys(editForecastDetail?.monthsValues || {}).length > 0 ? 'Editar' : 'Crear'} presupuesto{' '}
+						{editForecastDetail?.category?.name}
 					</Text>
 					<View className="flex-row w-full mt-4">
 						<Controller
@@ -103,6 +113,20 @@ export default function UpsertForecastView() {
 							render={({ field }) => (
 								<CurrencyInput value={field.value} onChange={field.onChange} minValue={1} placeholder="Monto" />
 							)}
+						/>
+					</View>
+					<View className="flex-row items-center gap-2 p-2">
+						<BouncyCheckbox
+							fillColor={colors.primary}
+							text="Seleccionar todos"
+							textStyle={{ color: 'white' }}
+							onPress={() => {
+								setSelectedMonths(
+									selectedMonths.length === months.length ? [] : months.map((month) => month.monthNumber),
+								)
+								setIsSelectedAll(!isSelectedAll)
+							}}
+							isChecked={isSelectedAll}
 						/>
 					</View>
 					<View className="flex-row mt-4 gap-2">
@@ -155,8 +179,8 @@ export default function UpsertForecastView() {
 				)}
 
 				<View className="flex-row justify-between items-center gap-2 p-2">
-					<Pressable className="bg-primary p-2 rounded-md" onPress={handleSubmit(onSubmit)}>
-						<Text className="text-white font-robotoBlack">Guardar</Text>
+					<Pressable className="bg-primary-500 w-full p-4 rounded-md" onPress={handleSubmit(onSubmit)}>
+						<Text className="text-white font-robotoBlack text-lg">Guardar</Text>
 					</Pressable>
 				</View>
 			</ScrollView>

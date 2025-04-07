@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function Forecasts() {
 	const insets = useSafeAreaInsets()
-	const { getforecastDetailByCategory, getIncomeByForecastTypeAndTransactionType } = useForecasts()
+	const { getforecastDetailByCategory } = useForecasts()
 	const { year, type } = useForecastsStore()
 	const [currentPage, setCurrentPage] = useState(0)
 	const { priorities } = usePrioritiesStore()

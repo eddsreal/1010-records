@@ -26,7 +26,7 @@ const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', '
 export const IncomeVsExpenseGraph = () => {
 	const { formatCompactNumber } = useNumbers()
 	const skiaRef = useRef<any>(null)
-	const { type, year } = useForecastsStore()
+	const { type, year, forecastsDetailElement } = useForecastsStore()
 	const { getIncomeByForecastTypeAndTransactionType } = useForecasts()
 	const [data, setData] = useState<ProjectedVsExecutedGraphData[]>([])
 
@@ -45,7 +45,7 @@ export const IncomeVsExpenseGraph = () => {
 			setData(dataFormatted)
 		}
 		getData()
-	}, [type, year])
+	}, [type, year, forecastsDetailElement])
 
 	useEffect(() => {
 		const option: EChartsOption = {
