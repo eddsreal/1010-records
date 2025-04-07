@@ -39,9 +39,8 @@ export default function UpsertTransaction() {
 	const { editTransaction } = useTransactionsStore()
 	const { priorities } = usePrioritiesStore()
 	const { paymentMethods } = usePaymentMethodsStore()
-	const [isCompleteMode, setIsCompleteMode] = useState<boolean>(false)
 	const { getCagetoriesByQueryAndType } = usePriorities()
-	const { getPaymentMethodByQuery } = usePaymentMethods()	
+	const { getPaymentMethodByQuery } = usePaymentMethods()
 	const { createTransaction } = useTransactions()
 	const { getRelativeDates } = useDates()
 
@@ -106,21 +105,27 @@ export default function UpsertTransaction() {
 				.find((priority) => priority.id === editTransaction.priorityId)
 				?.categories.find((category) => category.id === editTransaction.categoryId)
 
-			const formattedCategory = categoryObject ? {
-				id: categoryObject.id.toString(),
-				name: categoryObject.name,
-				icon: categoryObject.icon || '',
-				color: categoryObject.color || undefined,
-				priorityId: categoryObject.priorityId ?? undefined
-			} : null;
+			const formattedCategory = categoryObject
+				? {
+						id: categoryObject.id.toString(),
+						name: categoryObject.name,
+						icon: categoryObject.icon || '',
+						color: categoryObject.color || undefined,
+						priorityId: categoryObject.priorityId ?? undefined,
+					}
+				: null
 
-			const paymentMethodObject = paymentMethods.find((paymentMethod) => paymentMethod.id === editTransaction.paymentMethodId);
-			const formattedPaymentMethod = paymentMethodObject ? {
-				id: paymentMethodObject.id.toString(),
-				name: paymentMethodObject.name,
-				icon: '',
-				color: undefined
-			} : null;
+			const paymentMethodObject = paymentMethods.find(
+				(paymentMethod) => paymentMethod.id === editTransaction.paymentMethodId,
+			)
+			const formattedPaymentMethod = paymentMethodObject
+				? {
+						id: paymentMethodObject.id.toString(),
+						name: paymentMethodObject.name,
+						icon: '',
+						color: undefined,
+					}
+				: null
 
 			reset({
 				amount: editTransaction.amount,
@@ -129,7 +134,6 @@ export default function UpsertTransaction() {
 				paymentMethod: formattedPaymentMethod,
 				transactionType: editTransaction.type as TransactionTypeEnum,
 			})
-			setIsCompleteMode(true)
 		}
 	}, [editTransaction, priorities, paymentMethods])
 
@@ -170,17 +174,6 @@ export default function UpsertTransaction() {
 						<MaterialIcons name="remove" size={18} color="white" />
 					</TouchableOpacity>
 				</View>
-				<TouchableOpacity
-					className="bg-deepBlue-600 px-4 py-1 rounded-lg flex-row items-center gap-2"
-					onPress={() => setIsCompleteMode(!isCompleteMode)}
-				>
-					{isCompleteMode ? (
-						<MaterialIcons name="check-box" size={18} color="white" />
-					) : (
-						<MaterialIcons name="check-box-outline-blank" size={18} color="white" />
-					)}
-					<Text className="text-white font-robotoRegular text-lg">Modo completo</Text>
-				</TouchableOpacity>
 			</View>
 		)
 	}
@@ -196,38 +189,34 @@ export default function UpsertTransaction() {
 						)}
 					/>
 				</View>
-				{isCompleteMode && (
-					<>
-						<View className="flex-col w-full mt-4">
-							<Controller
-								control={control}
-								name="category"
-								render={({ field }) => (
-									<AutoSuggestInput
-										placeholder="Categoria"
-										value={field.value}
-										onChange={field.onChange}
-										searchItems={handleSearchCategories}
-									/>
-								)}
+				<View className="flex-col w-full mt-4">
+					<Controller
+						control={control}
+						name="category"
+						render={({ field }) => (
+							<AutoSuggestInput
+								placeholder="Categoria"
+								value={field.value}
+								onChange={field.onChange}
+								searchItems={handleSearchCategories}
 							/>
-						</View>
-						<View className="flex-col w-full mt-4">
-							<Controller
-								control={control}
-								name="paymentMethod"
-								render={({ field }) => (
-									<AutoSuggestInput
-										placeholder="Método de pago"
-										value={field.value}
-										onChange={field.onChange}
-										searchItems={handleSearchPaymentMethods}
-									/>
-								)}
+						)}
+					/>
+				</View>
+				<View className="flex-col w-full mt-4">
+					<Controller
+						control={control}
+						name="paymentMethod"
+						render={({ field }) => (
+							<AutoSuggestInput
+								placeholder="Método de pago"
+								value={field.value}
+								onChange={field.onChange}
+								searchItems={handleSearchPaymentMethods}
 							/>
-						</View>
-					</>
-				)}
+						)}
+					/>
+				</View>
 				<View className="flex-row w-full mt-4">
 					<Controller
 						control={control}
