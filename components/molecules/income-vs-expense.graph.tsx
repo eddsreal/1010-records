@@ -1,7 +1,9 @@
+import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { colors } from '@/common/styles/colors.styles'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { usePrioritiesStore } from '@/stores/priorities.store'
 import { SkiaChart, SkiaRenderer } from '@wuba/react-native-echarts'
 import { LineChart } from 'echarts/charts'
 import { TooltipComponent } from 'echarts/components'
@@ -18,7 +20,12 @@ incomeVsExpense.use([LineChart, SkiaRenderer, TooltipComponent])
 interface ProjectedVsExecutedGraphData {
 	month: string
 	income: number
-	expense: number
+	expense: {
+		priorityId: number
+		priorityName: string
+		priorityColor: string
+		amount: number
+	}[]
 }
 
 const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
@@ -28,6 +35,7 @@ export const IncomeVsExpenseGraph = () => {
 	const skiaRef = useRef<any>(null)
 	const { type, year, forecastsDetailElement } = useForecastsStore()
 	const { getIncomeByForecastTypeAndTransactionType } = useForecasts()
+	const { priorities } = usePrioritiesStore()
 	const [data, setData] = useState<ProjectedVsExecutedGraphData[]>([])
 
 	useEffect(() => {
@@ -35,7 +43,17 @@ export const IncomeVsExpenseGraph = () => {
 			const data = await getIncomeByForecastTypeAndTransactionType({ forecastType: type })
 			const dataFormatted = months.map((month, index) => {
 				const income = data.find((item) => item.month === index + 1 && item.transactionType === 'INCOME')?.amount || 0
-				const expense = data.find((item) => item.month === index + 1 && item.transactionType === 'EXPENSE')?.amount || 0
+
+				const expensePriorities = priorities.filter((priority) => priority.priorityType === TransactionTypeEnum.EXPENSE)
+				const expense = expensePriorities.map((priority) => {
+					const expense = data.find((item) => item.month === index + 1 && item.priorityId === priority.id)?.amount || 0
+					return {
+						priorityId: priority.id,
+						priorityName: priority.name,
+						priorityColor: priority.color,
+						amount: expense,
+					}
+				})
 				return {
 					month,
 					income,
@@ -82,12 +100,17 @@ export const IncomeVsExpenseGraph = () => {
 					color: colors.primary,
 					data: data.map((item) => item.income),
 				},
-				{
-					name: 'Salidas',
-					type: 'line',
-					color: colors.secondary,
-					data: data.map((item) => item.expense),
-				},
+				...priorities
+					.filter((priority) => priority.priorityType === TransactionTypeEnum.EXPENSE)
+					.map((priority) => ({
+						name: priority.name.substring(0, 10),
+						type: 'line' as const,
+						color: priority.color || '#cccccc',
+						data: data.map((item) => {
+							const expense = item.expense.find((exp) => exp.priorityId === priority.id)
+							return expense ? expense.amount : 0
+						}),
+					})),
 			],
 		}
 		let chart: EChartsType | undefined

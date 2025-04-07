@@ -390,10 +390,15 @@ export function useForecasts() {
 				amount: sum(schema.forecastDetails.amount),
 				transactionType: schema.forecastDetails.transactionType,
 				month: schema.forecastDetails.month,
+				priorityId: schema.forecastDetails.priorityId,
+				priorityName: schema.priorities.name,
+				priorityColor: schema.priorities.color,
 			})
 			.from(schema.forecastDetails)
+			.leftJoin(schema.priorities, eq(schema.forecastDetails.priorityId, schema.priorities.id))
 			.where(and(eq(schema.forecastDetails.forecastType, args.forecastType), eq(schema.forecastDetails.year, year)))
-			.groupBy(schema.forecastDetails.transactionType, schema.forecastDetails.month)
+			.groupBy(schema.forecastDetails.priorityId, schema.forecastDetails.month)
+			.orderBy(schema.forecastDetails.amount)
 
 		return forecastDetail
 	}
