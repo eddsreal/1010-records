@@ -5,16 +5,6 @@ export const menuItems = [
 		href: '/',
 	},
 	{
-		label: 'Transacciones',
-		icon: 'transaction',
-		href: '/transactions',
-	},
-	{
-		label: 'Presupuestos',
-		icon: 'budget',
-		href: '/forecasts',
-	},
-	{
 		label: 'Categorías',
 		icon: 'category',
 		href: '/upsert/category',
@@ -23,5 +13,10 @@ export const menuItems = [
 		label: 'Métodos de pago',
 		icon: 'payment-method',
 		href: '/payment-methods',
+	},
+	{
+		label: 'Presupuestos',
+		icon: 'budget',
+		href: '/forecasts',
 	},
 ]

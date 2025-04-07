@@ -19,6 +19,7 @@ interface FormData {
 
 const PriorityElement: React.FC<{ priority: PriorityWithCategories }> = ({ priority }) => {
 	const [isAddingCategory, setIsAddingCategory] = useState(false)
+	const { getPriorities } = usePriorities()
 	const { control, handleSubmit, reset } = useForm<FormData>({
 		defaultValues: {
 			name: '',
@@ -45,8 +46,9 @@ const PriorityElement: React.FC<{ priority: PriorityWithCategories }> = ({ prior
 			description: '',
 			icon: '',
 		})
-		usePrioritiesStore.setState({ editCategory: null, refreshPriorities: true })
+		usePrioritiesStore.setState({ editCategory: null })
 		setIsAddingCategory(false)
+		await getPriorities()
 	}
 
 	return (

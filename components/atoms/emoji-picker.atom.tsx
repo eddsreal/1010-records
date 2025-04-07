@@ -1,25 +1,12 @@
 import React, { useState } from 'react'
 import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native'
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 const commonEmojis = [
-	'💰',
-	'💳',
-	'💵',
-	'🏦',
-	'📊',
-	'📈',
-	'📉',
-	'🛒',
-	'🎯',
-	'💹',
-	'🏠',
-	'🚗',
-	'✈️',
-	'🍔',
-	'👕',
-	'💊',
-	'🎓',
-	'🎉',
+	'💰', '💵', '💸', '💳', '💴', '💶', '💷', '🏦', '📊', '📈',
+	'📉', '🧾', '🛒', '🛍️', '🏠', '🚗', '✈️', '🍔', '☕', '🍕',
+	'👔', '👗', '👟', '💼', '💻', '📱', '🔋', '⛽', '🚌', '🏥',
+	'💊', '🎓', '📚', '🎬', '🎮', '🎵', '🏋️', '💝', '🎁', '💅',
+	'💇', '🚿', '🧹', '🧺', '🔨', '👶', '🐶', '🐱', '🌱', '🔆'
 ]
 
 export const EmojiPicker = ({
@@ -32,6 +19,7 @@ export const EmojiPicker = ({
 	placeholder: string
 }) => {
 	const [modalVisible, setModalVisible] = useState(false)
+	const insets = useSafeAreaInsets()
 
 	const selectEmoji = (emoji: string) => {
 		onChange(emoji)
@@ -39,7 +27,7 @@ export const EmojiPicker = ({
 	}
 
 	return (
-		<View>
+		<View style={{ paddingBottom: insets.bottom }}>
 			<TouchableOpacity onPress={() => setModalVisible(true)} className="p-4 w-full bg-deepBlue-600 rounded-lg  ">
 				<Text className={`text-2xl font-robotoBlack ${value ? 'text-white' : 'text-deepBlue-700'}`}>
 					{value || placeholder}
@@ -52,9 +40,9 @@ export const EmojiPicker = ({
 				animationType="slide"
 				onRequestClose={() => setModalVisible(false)}
 			>
-				<View className="flex-1 justify-end ">
-					<View className="bg-white p-4 rounded-t-lg">
-						<Text className="text-xl font-bold mb-4">Selecciona un emoji</Text>
+				<View className="flex-1 justify-end">
+					<View className="bg-deepBlue-700 p-4 rounded-t-lg">
+						<Text className="text-xl font-bold mb-4 text-white font-robotoBlack">Selecciona un emoji</Text>
 						<FlatList
 							data={commonEmojis}
 							numColumns={6}
@@ -67,9 +55,9 @@ export const EmojiPicker = ({
 						/>
 						<TouchableOpacity
 							onPress={() => setModalVisible(false)}
-							className="mt-4 p-3 bg-gray-200 rounded-md items-center"
+							className="mt-4 p-3 bg-secondary-600 rounded-md items-center"
 						>
-							<Text>Cancelar</Text>
+							<Text className="text-white font-robotoBlack text-lg">Cancelar</Text>
 						</TouchableOpacity>
 					</View>
 				</View>

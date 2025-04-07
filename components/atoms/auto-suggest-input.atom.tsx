@@ -20,12 +20,18 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({ placeholder,
 	const [showItems, setShowItems] = useState<boolean>(false)
 	const [query, setQuery] = useState<string>('')
 	const [items, setItems] = useState<AutoSuggestItem[]>([])
+	const [isFocused, setIsFocused] = useState<boolean>(false)
 
 	const handleChange = (text: string) => {
 		setQuery(text)
-		setShowItems(text.length >= 2)
+		setShowItems(true)
 		handleSearch(text)
 	}
+
+	useEffect(() => {
+		handleSearch('')
+		setShowItems(isFocused)
+	}, [isFocused])
 
 	useEffect(() => {
 		if (value) {
@@ -46,11 +52,13 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({ placeholder,
 				placeholder={placeholder}
 				value={query}
 				onChangeText={handleChange}
+				onFocus={() => setIsFocused(true)}
+				onBlur={() => setIsFocused(false)}
 			/>
 			{showItems && (
 				<FlatList
 					data={items}
-					className="absolute top-[100%] w-full z-10"
+					className="absolute top-[100%] w-full z-10 h-36"
 					renderItem={({ item }) => (
 						<TouchableOpacity
 							style={{ backgroundColor: item.color ? item.color : '#232B5D' }}

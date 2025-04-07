@@ -77,6 +77,7 @@ export function usePriorities() {
 				set: {
 					name: category.name,
 					description: category.description,
+					icon: category.icon,
 				},
 			})
 		usePrioritiesStore.setState({ refreshPriorities: true })
@@ -93,7 +94,7 @@ export function usePriorities() {
 	}
 
 	const getCagetoriesByQueryAndType = async (query: string, type: TransactionTypeEnum) => {
-		const categories = await db
+		const categoriesQuery = db
 			.select({
 				id: schema.categories.id,
 				name: schema.categories.name,
@@ -103,16 +104,22 @@ export function usePriorities() {
 			})
 			.from(schema.categories)
 			.leftJoin(schema.priorities, eq(schema.categories.priorityId, schema.priorities.id))
-			.where(
+			.orderBy(schema.priorities.id, schema.categories.name)
+			.$dynamic()
+
+		if (query !== '') {
+			categoriesQuery.where(
 				and(
 					like(schema.categories.name, `%${query}%`),
 					eq(schema.priorities.priorityType, type),
 					eq(schema.categories.isDeleted, false),
 				),
 			)
-			.orderBy(schema.categories.name)
+		} else {
+			categoriesQuery.where(and(eq(schema.priorities.priorityType, type), eq(schema.categories.isDeleted, false)))
+		}
 
-		return categories
+		return await categoriesQuery
 	}
 
 	return {
@@ -124,5 +131,6 @@ export function usePriorities() {
 		updateCategory,
 		deleteCategory,
 		getCagetoriesByQueryAndType,
+		getPriorities,
 	}
 }
