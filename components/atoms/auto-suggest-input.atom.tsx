@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 export interface AutoSuggestItem {
 	id: string | number
@@ -56,11 +56,13 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({ placeholder,
 				onBlur={() => setIsFocused(false)}
 			/>
 			{showItems && (
-				<FlatList
-					data={items}
-					className="absolute top-[100%] w-full z-10 h-36"
-					renderItem={({ item }) => (
+				<ScrollView 
+					className="absolute top-[100%] w-full z-10"
+					style={{ maxHeight: 144 }} // Equivalente a h-36
+				>
+					{items.map((item) => (
 						<TouchableOpacity
+							key={item.id}
 							style={{ backgroundColor: item.color ? item.color : '#232B5D' }}
 							className="p-4 w-full"
 							onPress={() => onChange(item)}
@@ -69,8 +71,8 @@ export const AutoSuggestInput: React.FC<AutoSuggestInputProps> = ({ placeholder,
 								{item.icon} {item.name}
 							</Text>
 						</TouchableOpacity>
-					)}
-				/>
+					))}
+				</ScrollView>
 			)}
 		</View>
 	)

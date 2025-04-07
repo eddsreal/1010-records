@@ -5,5 +5,5 @@ type MenuStoreType = {
 }
 
 export const useMenuStore = create<MenuStoreType>()((set) => ({
-	currentRoute: '/index',
+	currentRoute: '/',
 }))

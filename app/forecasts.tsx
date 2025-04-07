@@ -4,6 +4,7 @@ import { PickerAtom } from '@/components/atoms/picker-atom'
 import { ForecastPriorityElement } from '@/components/molecules/forecast-priority-element.molecule'
 import { IncomeVsExpenseGraph } from '@/components/molecules/income-vs-expense.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { useMenuStore } from '@/stores/menu.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -32,7 +33,10 @@ export default function Forecasts() {
 				<View className="flex-row items-center gap-2">
 					<Text className="text-white text-3xl font-bold">Presupuesto</Text>
 				</View>
-				<Pressable onPress={() => router.dismissAll()}>
+				<Pressable onPress={() => {
+					router.dismissAll()
+					useMenuStore.setState({ currentRoute: '/' })
+				}}>
 					<MaterialIcons name="close" size={32} color="white" />
 				</Pressable>
 			</View>

@@ -2,6 +2,7 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Transaction } from '@/common/hooks/database/schema'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
+import { useMenuStore } from '@/stores/menu.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -81,7 +82,10 @@ export default function Transactions() {
 		>
 			<View className="flex-row justify-between items-center my-8">
 				<Text className="text-white font-robotoBold text-3xl">Transacciones</Text>
-				<Pressable onPress={() => router.dismissAll()}>
+				<Pressable onPress={() => {
+					router.dismissAll()
+					useMenuStore.setState({ currentRoute: '/' })
+				}}>
 					<MaterialIcons name="close" size={30} color="white" />
 				</Pressable>
 			</View>

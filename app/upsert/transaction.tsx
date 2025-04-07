@@ -5,6 +5,7 @@ import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
 import { useForecastsStore } from '@/stores/forecasts.store'
+import { useMenuStore } from '@/stores/menu.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -12,10 +13,11 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { AutoSuggestInput, AutoSuggestItem } from '../../components/atoms/auto-suggest-input.atom'
 import { CurrencyInput } from '../../components/atoms/currency-input.atom'
 import { PickerAtom } from '../../components/atoms/picker-atom'
+
 interface PeriodOption {
 	label: string
 	value: RelativeDateEnum
@@ -93,7 +95,9 @@ export default function UpsertTransaction() {
 		useForecastsStore.setState({ refreshGraphs: true })
 
 		reset()
+
 		router.dismissAll()
+		useMenuStore.setState({ currentRoute: '/' })
 	}
 
 	useEffect(() => {
@@ -251,11 +255,17 @@ export default function UpsertTransaction() {
 	}
 
 	return (
-		<View className="flex-1 justify-center bg-deepBlue-900 flex-col p-4">
-			{renderHeader()}
-			{renderHeaderActions()}
-			{renderForm()}
-			{renderFooter()}
-		</View>
+		<KeyboardAvoidingView
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+			className="flex-1 bg-deepBlue-900"
+			keyboardVerticalOffset={62}
+		>
+			<ScrollView contentContainerStyle={{ flexGrow: 1 }} className="p-4">
+				{renderHeader()}
+				{renderHeaderActions()}
+				{renderForm()}
+				{renderFooter()}
+			</ScrollView>
+		</KeyboardAvoidingView>
 	)
 }

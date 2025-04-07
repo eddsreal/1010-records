@@ -2,12 +2,14 @@ import { Category } from '@/common/hooks/database/schema'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { colors } from '@/common/styles/colors.styles'
 import { EmojiPicker } from '@/components/atoms/emoji-picker.atom'
+import { useMenuStore } from '@/stores/menu.store'
 import { PriorityWithCategories, usePrioritiesStore } from '@/stores/priorities.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import PagerView from 'react-native-pager-view'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -52,7 +54,7 @@ const PriorityElement: React.FC<{ priority: PriorityWithCategories }> = ({ prior
 	}
 
 	return (
-		<View className="flex-1">
+		<KeyboardAwareScrollView className="flex-1" bottomOffset={62}>
 			<View className="flex-row items-center justify-around gap-2 mb-4">
 				<Text
 					style={{ color: priority.color ? priority.color : colors.secondary }}
@@ -147,7 +149,7 @@ const PriorityElement: React.FC<{ priority: PriorityWithCategories }> = ({ prior
 					</Pressable>
 				</View>
 			)}
-		</View>
+		</KeyboardAwareScrollView>
 	)
 }
 
@@ -165,7 +167,8 @@ export default function UpsertCategory() {
 				</View>
 				<Pressable
 					onPress={() => {
-						router.push('/')
+						router.dismissAll()
+						useMenuStore.setState({ currentRoute: '/' })
 					}}
 				>
 					<MaterialIcons name="close" size={24} color="white" />

@@ -2,6 +2,7 @@ import { PaymentMethodTypeEnum } from '@/common/enums/payment-methods.enum'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { colors } from '@/common/styles/colors.styles'
 import NewPaymentMethod from '@/components/molecules/new-payment-method.molecule'
+import { useMenuStore } from '@/stores/menu.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -19,7 +20,10 @@ export default function PaymentMethods() {
 		<View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} className="flex-1 bg-deepBlue-800 p-4">
 			<View className="flex-row justify-between items-center">
 				<Text className="text-primary-500 text-5xl font-bold my-4">Métodos de pago</Text>
-				<TouchableOpacity onPress={() => router.dismissAll()}>
+				<TouchableOpacity onPress={() => {
+					router.dismissAll()
+					useMenuStore.setState({ currentRoute: '/' })
+				}}>
 					<MaterialIcons name="close" size={36} color="white" />
 				</TouchableOpacity>
 			</View>

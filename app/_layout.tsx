@@ -18,6 +18,7 @@ import { StatusBar } from 'expo-status-bar'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { Text, View } from 'react-native'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import '../global.css'
@@ -111,18 +112,20 @@ export default function RootLayout() {
 	}
 
 	return (
-		<SafeAreaProvider>
-			<Stack screenOptions={{ headerShown: false, }}>
-				<Stack.Screen name="index" options={{ title: 'Inicio', presentation: 'fullScreenModal' }} />
-				<Stack.Screen name="menu" options={{ title: 'Menu', presentation: 'modal' }} />
-				<Stack.Screen name="upsert/category" options={{ title: 'Categorías' }} />
-				<Stack.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
-				<Stack.Screen name="transactions" options={{ title: 'Transacciones', presentation: 'modal' }} />
-				<Stack.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
-				<Stack.Screen name="upsert/forecast" options={{ title: 'Presupuestos' }} />
-				<Stack.Screen name="upsert/transaction" options={{ title: 'Transacciones', presentation: 'modal' }} />
-			</Stack>
-			<StatusBar style="light" />
-		</SafeAreaProvider>
+		<KeyboardProvider>
+			<SafeAreaProvider>
+				<Stack screenOptions={{ headerShown: false }}>
+					<Stack.Screen name="index" options={{ title: 'Inicio', presentation: 'fullScreenModal' }} />
+					<Stack.Screen name="menu" options={{ title: 'Menu', presentation: 'modal' }} />
+					<Stack.Screen name="upsert/category" options={{ title: 'Categorías' }} />
+					<Stack.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
+					<Stack.Screen name="transactions" options={{ title: 'Transacciones', presentation: 'modal' }} />
+					<Stack.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
+					<Stack.Screen name="upsert/forecast" options={{ title: 'Presupuestos' }} />
+					<Stack.Screen name="upsert/transaction" options={{ title: 'Transacciones', presentation: 'modal' }} />
+				</Stack>
+				<StatusBar style="light" />
+			</SafeAreaProvider>
+		</KeyboardProvider>
 	)
 }
