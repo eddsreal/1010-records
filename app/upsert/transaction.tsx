@@ -90,6 +90,7 @@ export default function UpsertTransaction() {
 		}
 
 		await createTransaction(transaction as Transaction)
+		useForecastsStore.setState({ refreshGraphs: true })
 
 		reset()
 		router.dismissAll()

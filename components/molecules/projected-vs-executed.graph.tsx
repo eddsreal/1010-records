@@ -40,7 +40,7 @@ interface ProjectedVsExecutedGraphData {
 export const ProjectedVsExecutedGraph = () => {
 	const { formatCompactNumber } = useNumbers()
 	const skiaRef = useRef<any>(null)
-	const { transactionType, relativeDates } = useForecastsStore()
+	const { transactionType, relativeDates, refreshGraphs } = useForecastsStore()
 	const { getProjectedVsExecutedByCategoryAndType } = useForecasts()
 	const [data, setData] = useState<ProjectedVsExecutedGraphData[]>([])
 
@@ -62,7 +62,7 @@ export const ProjectedVsExecutedGraph = () => {
 			)
 		}
 		fetchData()
-	}, [transactionType, relativeDates])
+	}, [transactionType, relativeDates, refreshGraphs])
 
 	useEffect(() => {
 		const labelOption: BarSeriesOption['label'] = {

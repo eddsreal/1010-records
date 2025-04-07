@@ -30,6 +30,7 @@ type ForecastsStoreType = {
 	type: ForecastType
 	year: number
 	yearForecast: Forecast | undefined
+	refreshGraphs: boolean
 }
 
 export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
@@ -41,4 +42,5 @@ export const useForecastsStore = create<ForecastsStoreType>()((set) => ({
 	type: ForecastType.PROJECTED,
 	year: new Date().getFullYear(),
 	yearForecast: undefined,
+	refreshGraphs: false,
 }))

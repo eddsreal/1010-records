@@ -66,7 +66,20 @@ export const IncomeVsExpenseGraph = () => {
 	}, [type, year, forecastsDetailElement])
 
 	useEffect(() => {
+		const legendData = [
+			'Entradas',
+			...priorities
+				.filter((priority) => priority.priorityType === TransactionTypeEnum.EXPENSE)
+				.map((priority) => priority.name.substring(0, 10)),
+		]
 		const option: EChartsOption = {
+			legend: {
+				data: legendData,
+				textStyle: {
+					color: '#FFFFFF',
+					fontSize: 14,
+				},
+			},
 			grid: {
 				left: '3%',
 				right: '4%',
