@@ -4,6 +4,7 @@ import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.h
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
+import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
@@ -43,13 +44,14 @@ export default function UpsertTransaction() {
 	const { getPaymentMethodByQuery } = usePaymentMethods()
 	const { createTransaction } = useTransactions()
 	const { getRelativeDates } = useDates()
+	const { transactionType: defaultTransactionType } = useForecastsStore()
 
 	const { control, handleSubmit, watch, setValue, reset } = useForm<NewTransactionForm>({
 		defaultValues: {
 			description: '',
 			category: null,
 			paymentMethod: null,
-			transactionType: TransactionTypeEnum.EXPENSE,
+			transactionType: defaultTransactionType,
 		},
 	})
 

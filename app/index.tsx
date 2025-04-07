@@ -12,7 +12,6 @@ import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
 import { router } from 'expo-router'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
@@ -33,7 +32,6 @@ const periodOptions: PeriodOption[] = [
 ]
 
 export default function Index() {
-	const navigation = useNavigation()
 	const { formatToCurrency } = useNumbers()
 	const { getRelativeDates } = useDates()
 	const insets = useSafeAreaInsets()
