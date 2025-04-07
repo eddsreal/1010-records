@@ -8,12 +8,13 @@ import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { AutoSuggestInput, AutoSuggestItem } from '../atoms/auto-suggest-input.atom'
-import { CurrencyInput } from '../atoms/currency-input.atom'
-import { PickerAtom } from '../atoms/picker-atom'
+import { AutoSuggestInput, AutoSuggestItem } from '../../components/atoms/auto-suggest-input.atom'
+import { CurrencyInput } from '../../components/atoms/currency-input.atom'
+import { PickerAtom } from '../../components/atoms/picker-atom'
 interface PeriodOption {
 	label: string
 	value: RelativeDateEnum
@@ -32,7 +33,7 @@ interface NewTransactionForm {
 	transactionType: TransactionTypeEnum
 }
 
-export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export default function UpsertTransaction() {
 	const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption | null>(periodOptions[0])
 	const [date, setDate] = useState<Date>(new Date())
 	const { editTransaction } = useTransactionsStore()
@@ -90,7 +91,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 		await createTransaction(transaction as Transaction)
 
 		reset()
-		onClose()
+		router.dismissAll()
 	}
 
 	useEffect(() => {
@@ -140,7 +141,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 				>
 					Registro
 				</Text>
-				<TouchableOpacity onPress={onClose}>
+				<TouchableOpacity onPress={() => router.dismissAll()}>
 					<MaterialIcons name="close" size={36} color="white" />
 				</TouchableOpacity>
 			</View>
@@ -148,7 +149,7 @@ export const NewTransaction: React.FC<{ onClose: () => void }> = ({ onClose }) =
 	}
 	const renderHeaderActions = () => {
 		return (
-			<View className="flex-row w-full gap-2 justify-between mb-4">
+			<View className="flex-row gap-2 justify-between mb-4">
 				<PickerAtom
 					label="Periodo"
 					options={periodOptions}

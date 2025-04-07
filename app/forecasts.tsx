@@ -32,7 +32,7 @@ export default function Forecasts() {
 				<View className="flex-row items-center gap-2">
 					<Text className="text-white text-3xl font-bold">Presupuesto</Text>
 				</View>
-				<Pressable onPress={() => router.push('/')}>
+				<Pressable onPress={() => router.dismissAll()}>
 					<MaterialIcons name="close" size={32} color="white" />
 				</Pressable>
 			</View>

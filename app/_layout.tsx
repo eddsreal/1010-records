@@ -11,17 +11,15 @@ import {
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
-import { Drawer } from 'expo-router/drawer'
+import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { openDatabaseSync } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { Text, View } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-import { colors } from '@/common/styles/colors.styles'
 import '../global.css'
 const expoDb = openDatabaseSync('1010records')
 const db = drizzle(expoDb)
@@ -114,42 +112,16 @@ export default function RootLayout() {
 
 	return (
 		<SafeAreaProvider>
-			<GestureHandlerRootView style={{ flex: 1 }}>
-				<Drawer
-					screenOptions={{
-						drawerType: 'slide',
-						drawerPosition: 'right',
-						headerShown: false,
-						drawerStyle: {
-							backgroundColor: colors.deepBlue[800],
-						},
-						drawerActiveBackgroundColor: colors.deepBlue[600],
-						drawerActiveTintColor: colors.primary,
-						drawerInactiveTintColor: 'white',
-						drawerLabelStyle: {
-							fontFamily: 'Roboto_500Medium',
-							fontSize: 20,
-						},
-						drawerItemStyle: {
-							backgroundColor: colors.deepBlue[800],
-							borderRadius: 0,
-						},
-					}}
-				>
-					<Drawer.Screen name="index" options={{ title: 'Inicio' }} />
-					<Drawer.Screen name="upsert/category" options={{ title: 'Categorías' }} />
-					<Drawer.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
-					<Drawer.Screen
-						name="transactions"
-						options={{ title: 'Transacciones', drawerItemStyle: { display: 'none' } }}
-					/>
-					<Drawer.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
-					<Drawer.Screen
-						name="upsert/forecast"
-						options={{ title: 'Presupuestos', drawerItemStyle: { display: 'none' } }}
-					/>
-				</Drawer>
-			</GestureHandlerRootView>
+			<Stack screenOptions={{ headerShown: false, }}>
+				<Stack.Screen name="index" options={{ title: 'Inicio', presentation: 'fullScreenModal' }} />
+				<Stack.Screen name="menu" options={{ title: 'Menu', presentation: 'modal' }} />
+				<Stack.Screen name="upsert/category" options={{ title: 'Categorías' }} />
+				<Stack.Screen name="payment-methods" options={{ title: 'Métodos de pago' }} />
+				<Stack.Screen name="transactions" options={{ title: 'Transacciones', presentation: 'modal' }} />
+				<Stack.Screen name="forecasts" options={{ title: 'Presupuestos' }} />
+				<Stack.Screen name="upsert/forecast" options={{ title: 'Presupuestos' }} />
+				<Stack.Screen name="upsert/transaction" options={{ title: 'Transacciones', presentation: 'modal' }} />
+			</Stack>
 			<StatusBar style="light" />
 		</SafeAreaProvider>
 	)

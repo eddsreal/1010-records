@@ -7,36 +7,40 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "records1010",
+    "scheme": "tentenrecords",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tentenfinance.tentenrecords",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tentenfinance.tentenrecords"
     },
     "plugins": [
       "expo-router",
-      "expo-sqlite",
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "node_modules/@expo-google-fonts/roboto/Roboto-Regular.ttf",
-            "node_modules/@expo-google-fonts/roboto/Roboto-Bold.ttf",
-            "node_modules/@expo-google-fonts/roboto/Roboto-Medium.ttf",
-            "node_modules/@expo-google-fonts/roboto/Roboto-Light.ttf",
-            "node_modules/@expo-google-fonts/roboto/Roboto-Thin.ttf"
-          ]
-        }
-      ]
-    ]
+      "expo-sqlite"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c801d075-895a-47c8-b5ef-86008b06f009"
+      }
+    }
   }
 }

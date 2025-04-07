@@ -19,7 +19,7 @@ export default function PaymentMethods() {
 		<View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} className="flex-1 bg-deepBlue-800 p-4">
 			<View className="flex-row justify-between items-center">
 				<Text className="text-primary-500 text-5xl font-bold my-4">Métodos de pago</Text>
-				<TouchableOpacity onPress={() => router.push('/')}>
+				<TouchableOpacity onPress={() => router.dismissAll()}>
 					<MaterialIcons name="close" size={36} color="white" />
 				</TouchableOpacity>
 			</View>

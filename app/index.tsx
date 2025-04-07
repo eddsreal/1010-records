@@ -6,18 +6,17 @@ import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { PickerAtom } from '@/components/atoms/picker-atom'
-import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { ProjectedVsExecutedGraph } from '@/components/molecules/projected-vs-executed.graph'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { DrawerActions, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { router } from 'expo-router'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
-import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 interface PeriodOption {
@@ -44,7 +43,6 @@ export default function Index() {
 	const typeText = isIncome ? 'Entradas' : 'Salidas'
 	const [forecastExecutedAmount, setForecastExecutedAmount] = useState(0)
 	const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption | null>(periodOptions[0])
-	const [modalVisible, setModalVisible] = useState(false)
 
 	const fetchData = async () => {
 		const forecastExecutedAmount = await getForecastExecutedAmountByType({
@@ -123,7 +121,7 @@ export default function Index() {
 				<View className="flex-row items-center">
 					<Pressable
 						className="border border-black p-2 rounded-full"
-						onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+						onPress={() => router.push('/menu')}
 					>
 						<MaterialIcons name="settings" size={18} color="white" />
 					</Pressable>
@@ -162,22 +160,13 @@ export default function Index() {
 					<Pressable
 						className={`shadow-lg ${isIncome ? 'bg-primary-500 shadow-primary-300' : 'bg-secondary-500 shadow-secondary-300'} p-2 rounded-full`}
 						onPress={() => {
-							setModalVisible(true)
+							router.push('/upsert/transaction')
 						}}
 					>
 						<MaterialIcons name="add" size={48} color="white" />
 					</Pressable>
 				</View>
 			</View>
-
-			<Modal
-				transparent={true}
-				visible={modalVisible}
-				animationType="slide"
-				onRequestClose={() => setModalVisible(false)}
-			>
-				<NewTransaction onClose={() => setModalVisible(false)} />
-			</Modal>
 		</View>
 	)
 }

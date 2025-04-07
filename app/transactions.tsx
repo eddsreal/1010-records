@@ -2,14 +2,13 @@ import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Transaction } from '@/common/hooks/database/schema'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
-import { NewTransaction } from '@/components/molecules/new-transaction.molecule'
 import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
-import { FlatList, Modal, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const TransactionListItem = ({
@@ -62,7 +61,6 @@ export default function Transactions() {
 	useTransactions()
 	const insets = useSafeAreaInsets()
 	const { pendingTransactions, latestTransactions } = useTransactionsStore()
-	const { priorities } = usePrioritiesStore()
 	const [modalVisible, setModalVisible] = useState(false)
 
 	useEffect(() => {
@@ -83,7 +81,7 @@ export default function Transactions() {
 		>
 			<View className="flex-row justify-between items-center my-8">
 				<Text className="text-white font-robotoBold text-3xl">Transacciones</Text>
-				<Pressable onPress={() => router.push('/')}>
+				<Pressable onPress={() => router.dismissAll()}>
 					<MaterialIcons name="close" size={30} color="white" />
 				</Pressable>
 			</View>
@@ -117,22 +115,12 @@ export default function Transactions() {
 				<FlatList
 					data={latestTransactions}
 					renderItem={({ item }) => {
-						const priority = priorities.find((priority) => priority.id === item.priorityId)
 						return (
 							<TransactionListItem transaction={item} handleEditTransaction={handleEditTransaction} isPending={false} />
 						)
 					}}
 				/>
 			</View>
-
-			<Modal
-				transparent={true}
-				visible={modalVisible}
-				animationType="slide"
-				onRequestClose={() => setModalVisible(false)}
-			>
-				<NewTransaction onClose={() => setModalVisible(false)} />
-			</Modal>
 		</View>
 	)
 }
