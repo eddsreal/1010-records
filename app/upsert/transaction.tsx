@@ -1,9 +1,11 @@
 import { TransactionTypeEnum } from '@/common/enums/transactions.enum'
 import { Transaction } from '@/common/hooks/database/schema'
+import { useForecasts } from '@/common/hooks/database/use-forecasts.hook'
 import { usePaymentMethods } from '@/common/hooks/database/use-payment-methods.hook'
 import { usePriorities } from '@/common/hooks/database/use-priorities.hook'
 import { useTransactions } from '@/common/hooks/database/use-transactions.hook'
 import { RelativeDateEnum, useDates } from '@/common/hooks/utilities/use-dates.hook'
+import { useNumbers } from '@/common/hooks/utilities/use-numbers.hook'
 import { useForecastsStore } from '@/stores/forecasts.store'
 import { useMenuStore } from '@/stores/menu.store'
 import { usePaymentMethodsStore } from '@/stores/payment-methods.store'
@@ -11,12 +13,18 @@ import { usePrioritiesStore } from '@/stores/priorities.store'
 import { useTransactionsStore } from '@/stores/transactions.store'
 import { MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { AutoSuggestInput, AutoSuggestItem } from '../../components/atoms/auto-suggest-input.atom'
 import { CurrencyInput } from '../../components/atoms/currency-input.atom'
 import { PickerAtom } from '../../components/atoms/picker-atom'
+interface ForecastComparison {
+	proyected: number
+	executed: number
+	difference: number
+}
 
 interface PeriodOption {
 	label: string
@@ -47,6 +55,9 @@ export default function UpsertTransaction() {
 	const { createTransaction } = useTransactions()
 	const { getRelativeDates } = useDates()
 	const { transactionType: defaultTransactionType } = useForecastsStore()
+	const { getForecastComparison } = useForecasts()
+	const [forecastComparison, setForecastComparison] = useState<ForecastComparison | null>(null)
+	const { formatToCurrency } = useNumbers()
 
 	const { control, handleSubmit, watch, setValue, reset } = useForm<NewTransactionForm>({
 		defaultValues: {
@@ -58,6 +69,8 @@ export default function UpsertTransaction() {
 	})
 
 	const transactionType = watch('transactionType')
+	const category = watch('category')
+	const amount = watch('amount')
 
 	const handleSearchCategories = async (search: string) => {
 		const categories = await getCagetoriesByQueryAndType(search, transactionType)
@@ -143,6 +156,21 @@ export default function UpsertTransaction() {
 			})
 		}
 	}, [editTransaction, priorities, paymentMethods])
+
+	useEffect(() => {
+		const fetchForecastComparison = async () => {
+			const forecastComparison = await getForecastComparison({
+				categoryId: category?.id ? Number(category.id) : undefined,
+				priorityId: category?.priorityId ? Number(category.priorityId) : undefined,
+				month: date.getMonth(),
+				amount: amount,
+			})
+			setForecastComparison(forecastComparison)
+		}
+		if (category && amount > 0 && date) {
+			fetchForecastComparison()
+		}
+	}, [category, amount, date])
 
 	const renderHeader = () => {
 		return (
@@ -253,6 +281,31 @@ export default function UpsertTransaction() {
 			</View>
 		)
 	}
+	const renderProjectedComparison = () => {
+		return (
+			<View className="flex-col w-full mt-4 justify-end">
+				<Text className="text-primary-500 font-robotoBold text-2xl">Comparación</Text>
+				<View className="flex-row w-full justify-between">
+					<View className="flex-col items-start gap-2 w-1/2">
+						<Text className="text-white font-robotoRegular text-lg capitalize">Mes: {moment(date).format('MMMM')}</Text>
+						<Text className="text-white font-robotoRegular text-lg">
+							Proyectado: {formatToCurrency(forecastComparison?.proyected ?? 0)}
+						</Text>
+						<Text className="text-white font-robotoRegular text-lg">
+							Ejecutado: {formatToCurrency(forecastComparison?.executed ?? 0)}
+						</Text>
+					</View>
+					<View className="flex-col items-start gap-2 w-1/2">
+						<Text className="text-white font-robotoRegular text-lg">
+							{forecastComparison?.difference && forecastComparison?.difference > 0
+								? `Excelente ${formatToCurrency(forecastComparison?.difference ?? 0)} disponibles para este mes`
+								: `Oops! te excediste ${formatToCurrency(forecastComparison?.difference ?? 0)} para este mes`}
+						</Text>
+					</View>
+				</View>
+			</View>
+		)
+	}
 
 	return (
 		<KeyboardAvoidingView
@@ -264,6 +317,7 @@ export default function UpsertTransaction() {
 				{renderHeader()}
 				{renderHeaderActions()}
 				{renderForm()}
+				{category && amount > 0 && renderProjectedComparison()}
 				{renderFooter()}
 			</ScrollView>
 		</KeyboardAvoidingView>

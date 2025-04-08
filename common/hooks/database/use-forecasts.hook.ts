@@ -116,21 +116,26 @@ export function useForecasts() {
 		month: number
 		amount: number
 	}): Promise<ForecastComparison> => {
-		const forecastDetailProjected = await getForecastDetail({
-			priorityId: args.priorityId,
-			categoryId: args.categoryId,
-			month: args.month,
-		})
-		const proyected = forecastDetailProjected?.reduce((acc, curr) => acc + curr.amount, 0) || 0
-		const forecastDetailExecuted = await getForecastDetail({
-			priorityId: args.priorityId,
-			categoryId: args.categoryId,
-			month: args.month,
-			forecastType: ForecastType.EXECUTED,
-		})
-		const executed = forecastDetailExecuted?.reduce((acc, curr) => acc + curr.amount, 0) || 0
-		const isMoreThanProyected = executed + args.amount > proyected
-		const isZero = proyected - executed - args.amount === 0
+		const forecasts = await db
+			.select({
+				amount: sum(schema.forecastDetails.amount),
+				forecastType: schema.forecastDetails.forecastType,
+			})
+			.from(schema.forecastDetails)
+			.leftJoin(schema.categories, eq(schema.forecastDetails.categoryId, schema.categories.id))
+			.where(
+				and(
+					eq(schema.forecastDetails.year, year),
+					eq(schema.forecastDetails.month, args.month + 1),
+					eq(schema.forecastDetails.priorityId, args.priorityId ?? 0),
+					eq(schema.forecastDetails.categoryId, args.categoryId ?? 0),
+				),
+			)
+			.groupBy(schema.forecastDetails.forecastType)
+		const proyected = forecasts.find((forecast) => forecast.forecastType === ForecastType.PROJECTED)?.amount || 0
+		const executed = forecasts.find((forecast) => forecast.forecastType === ForecastType.EXECUTED)?.amount || 0
+		const isMoreThanProyected = Number(executed) + Number(args.amount) > Number(proyected)
+		const isZero = Number(proyected) - Number(executed) - Number(args.amount) === 0
 
 		return {
 			proyected,
